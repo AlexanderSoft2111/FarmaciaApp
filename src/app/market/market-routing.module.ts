@@ -11,6 +11,7 @@ import { canActivate } from '@angular/fire/auth-guard';
 import { environment } from '../../environments/environment.prod';
 import { KardexComponent } from './pages/kardex/kardex.component';
 
+
 const routes: Routes = [
   { path: 'inventario', component: InventarioComponent, ...canActivate(environment.isAdmin)},  
   { path: 'ventas', component: VentasComponent, ...canActivate(environment.isAdmin)},

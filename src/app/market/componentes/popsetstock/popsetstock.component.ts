@@ -87,7 +87,7 @@ export class PopsetstockComponent implements OnInit {
         cantidad: this.miFormulario.controls['cantidad'].value,
         um: this.miFormulario.controls['um'].value,
         producto: this.producto.producto,
-        fecha_transaccion: new Date(),
+        fecha_transaccion: `${new Date().toLocaleString()}`,
         tipo_transaccion: 'Ingreso de stock'
       };
 

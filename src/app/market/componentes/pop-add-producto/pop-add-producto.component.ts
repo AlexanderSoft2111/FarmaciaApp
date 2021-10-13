@@ -17,7 +17,7 @@ export class PopAddProductoComponent implements OnInit {
     precio_compra: null,
     precio_venta: null,
     fecha_caducidad: new Date(),
-    fecha_creacion: new Date(),
+    fecha_creacion: `${new Date().toLocaleString()}`,
     descuento: false
   }
 

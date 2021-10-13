@@ -14,7 +14,7 @@ export interface TransaccionProducto {
    cantidad: number;
    um: string;
    producto: Producto;
-   fecha_transaccion: Date;
+   fecha_transaccion: string;
    tipo_transaccion: string
 }
 
@@ -33,7 +33,7 @@ export interface Producto {
     descuento: boolean;
     fecha_caducidad: Date;
     fecha_elaboracion?: Date;
-    fecha_creacion: Date;
+    fecha_creacion: string;
  }
 
 

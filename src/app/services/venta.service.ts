@@ -249,7 +249,7 @@ export class VentaService {
             descuento: false,
             fecha_caducidad: new Date(),
             fecha_elaboracion: new Date(),
-            fecha_creacion: new Date()
+            fecha_creacion: `${new Date().toLocaleString()}`
           },
           detalle: ''
         },

@@ -109,7 +109,7 @@ export class AddinventarioComponent implements OnInit{
               precio_venta: this.articuloForm.controls['precio_venta'].value,
               fecha_caducidad: this.articuloForm.controls['fecha_caducidad'].value,
               fecha_elaboracion: this.articuloForm.controls['fecha_elaboracion'].value,
-              fecha_creacion: new Date(),
+              fecha_creacion: `${new Date().toLocaleString()}`,
               descuento: false
             };
   
@@ -136,7 +136,7 @@ export class AddinventarioComponent implements OnInit{
                   precio_venta: null,
                   fecha_caducidad: new Date(),
                   fecha_elaboracion: new Date(),
-                  fecha_creacion: new Date(),
+                  fecha_creacion: `${new Date().toLocaleString()}`,
                   descuento: false
                 }; 
 
@@ -160,7 +160,7 @@ export class AddinventarioComponent implements OnInit{
       precio_venta: this.articuloForm.controls['precio_venta'].value,
       fecha_caducidad: this.articuloForm.controls['fecha_caducidad'].value,
       fecha_elaboracion: this.articuloForm.controls['fecha_elaboracion'].value,
-      fecha_creacion: new Date(),
+      fecha_creacion: `${new Date().toLocaleString()}`,
       descuento: false
     };
 

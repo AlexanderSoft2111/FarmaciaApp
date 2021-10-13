@@ -10,7 +10,8 @@ import { environment } from '../../../../environments/environment.prod';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { FireAuthService } from '../../../services/fire-auth.service';
-import { ModalKardexComponent } from '../../componentes/modal-kardex/modal-kardex.component';
+import { ModalDetalleComponent } from '../../componentes/modal-detalle/modal-detalle.component';
+
 
 @Component({
   selector: 'app-kardex',
@@ -43,7 +44,7 @@ export class KardexComponent implements OnInit {
  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
-
+  fecha_creacion = new Date();
   cantidad: number = null;
   um: string = '';
   
@@ -161,19 +162,21 @@ buscar(codigo: string) {
 
 
   async openModalVenta(transaccion: TransaccionProducto) {
-
-    const modal = await this.popoverController.create({
-        component: ModalKardexComponent,
+    
+    console.log(typeof transaccion.fecha_transaccion);
+     const modal = await this.popoverController.create({
+        component: ModalDetalleComponent,
         componentProps: {
           transaccion,
-          cantidad: this.cantidad
+          cantidad: this.cantidad,
+          fecha: this.fecha_creacion
         },
         cssClass: 'popoverCssTransacciones',
         translucent: false,
         backdropDismiss: true,
         mode: 'ios'
     });
-    await modal.present();
+    await modal.present(); 
   }
 
 

@@ -27,7 +27,6 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   iva: boolean = false;
   detalle: string = '';
-
   encabezados = ['Boni','Código', 'Descripción','Lote', 'Stock', 'Cantidad', 'Precio', 'Total']
   
   constructor(private ventaService: VentaService,
@@ -125,7 +124,7 @@ export class VentaComponent implements OnInit, OnDestroy {
             descuento: false,
             fecha_caducidad: new Date(),
             fecha_elaboracion: new Date(),
-            fecha_creacion: new Date()
+            fecha_creacion: `${new Date().toLocaleString()}`
           },
           detalle: ''
         },
@@ -308,7 +307,7 @@ export class VentaComponent implements OnInit, OnDestroy {
                     cantidad: item.cantidad,
                     um: item.producto.um,
                     producto: item.producto.producto,
-                    fecha_transaccion: new Date(),
+                    fecha_transaccion: `${new Date().toLocaleString()}`,
                     tipo_transaccion: 'Egreso de stock'
                   };
                   
@@ -320,6 +319,7 @@ export class VentaComponent implements OnInit, OnDestroy {
                 
               });
               this.ventaService.saveVentaTerminada();
+              this.generarPDF();
               this.pago = 0;
               this.vuelto = 0;
             } else {
@@ -340,19 +340,27 @@ export class VentaComponent implements OnInit, OnDestroy {
     }
   }
 
-  guardarPDF(){
+  generarPDF(){
 
     // Landscape export, 2×4 inches
   const doc = new jsPDF();
   
   doc.setFontSize(10);
-  doc.text("Cliente", 11, 42);    doc.text(this.venta.cliente.nombre, 25, 42);      doc.text("Ruc", 145, 42);    doc.text(this.venta.cliente.ruc, 157, 42);
-  doc.text("Fecha", 11, 48);      doc.text('11/10/2021', 25, 48);                   doc.text("Telf", 117, 48);    doc.text(this.venta.cliente.telefono, 128, 48);
-  doc.text("Dirección", 11, 54);  doc.text(this.venta.cliente.direccion, 30, 54);
-  doc.text("Email", 11, 60);      doc.text(this.venta.cliente.email, 25, 60);
-  doc.text("CANT.", 18, 68);      doc.text("DESCRIPCION", 55, 68);   doc.text("V.UNIT.", 166, 68);  doc.text("V.TOTAL", 188, 68);
+  //doc.text("Cliente", 11, 42);    
+  doc.text(this.venta.cliente.nombre, 25, 41);      
+  //doc.text("Ruc", 145, 42);    
+  doc.text(this.venta.cliente.ruc, 157, 41);
+  //doc.text("Fecha", 11, 48);      
+  doc.text(`${new Date().toLocaleDateString()}`, 25, 47);                   
+  //doc.text("Telf", 117, 48);    
+  doc.text(this.venta.cliente.telefono, 128, 47);
+  //doc.text("Dirección", 11, 54);  
+  doc.text(this.venta.cliente.direccion, 30, 54);
+  //doc.text("Email", 11, 60);      
+  doc.text(this.venta.cliente.email, 25, 61);
+  //doc.text("CANT.", 18, 68);      doc.text("DESCRIPCION", 55, 68);   doc.text("V.UNIT.", 166, 68);  doc.text("V.TOTAL", 188, 68);
   
-  let positionX = 74;
+  let positionX = 73;
   this.venta.productos.forEach(producto => {
       if(producto.producto.producto.codigo !== ''){
 
@@ -364,15 +372,19 @@ export class VentaComponent implements OnInit, OnDestroy {
       } 
       else { return}
   });
-  positionX = 74;
+  positionX = 73;
 
-  doc.text("SUBTOTAL $", 161, 120);     doc.text(this.venta.subtotal_sin_iva.toFixed(2), 185, 120);
-  doc.text("DESCUENTO $", 158, 126);         
-  doc.text("I.V.A 0 % $", 161, 132);    
-  doc.text("I.V.A % $", 159, 138);      doc.text(this.venta.iva.toFixed(2), 185, 138);
-  doc.text("TOTAL % $", 166, 144);      doc.text(this.venta.total.toFixed(2), 185, 144);
+  //doc.text("SUBTOTAL $", 161, 120);     
+  doc.text(`$ ${this.venta.subtotal_sin_iva.toFixed(2)}`, 185, 120);
+  //doc.text("DESCUENTO $", 158, 126);         
+  //doc.text("I.V.A 0 % $", 161, 132);    
+  //doc.text("I.V.A % $", 159, 138);      
+  doc.text(`$ ${this.venta.iva.toFixed(2)}`, 185, 138);
+  //doc.text("TOTAL % $", 166, 144);      
+  doc.text(`$ ${this.venta.total.toFixed(2)}`, 185, 144);
 
-  doc.text('Otros', 12, 135); doc.text(this.detalle, 37, 135);
+  //doc.text('Otros', 12, 135); 
+  doc.text(this.detalle, 37, 135);
   doc.save(`Factura_${this.serie}${this.venta.numero}.pdf`);
   }
 

@@ -24,7 +24,7 @@ import {ClipboardModule} from '@angular/cdk/clipboard';
 import { PopsetclientComponent } from './componentes/popsetclient/popsetclient.component';
 import { LoginComponent } from './pages/login/login.component';
 import { KardexComponent } from './pages/kardex/kardex.component';
-import { ModalKardexComponent } from './componentes/modal-kardex/modal-kardex.component';
+import { ModalDetalleComponent } from './componentes/modal-detalle/modal-detalle.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +41,7 @@ import { ModalKardexComponent } from './componentes/modal-kardex/modal-kardex.co
     PopsetclientComponent,
     LoginComponent,
     KardexComponent,
-    ModalKardexComponent
+    ModalDetalleComponent
   ],
   imports: [
     CommonModule,
