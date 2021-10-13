@@ -1,0 +1,96 @@
+
+<form [formGroup]="miFormulario" (ngSubmit)=guardar()>
+  <ion-card class="m-0 none">
+    <ion-item detail="false" class="none item-native">
+      <ion-label class="text-center">
+        <strong>{{titulo}}</strong>
+      </ion-label>
+      <ion-buttons slot="end" >
+        <ion-button *ngIf="venta" (click)="aceptar()">
+          <ion-icon slot="icon-only" name="checkbox" color="success"></ion-icon>
+        </ion-button>
+        <ion-button (click)="close()">
+          <ion-icon slot="icon-only" name="close" color="dark"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+
+
+    <mat-form-field class="normal" appearance="outline" class="full-width">
+      <mat-label>Cédula o Ruc:</mat-label>
+      <input matInput class="normal" maxlength="13" 
+             formControlName="ruc" 
+             [(ngModel)]="rucCliente" 
+             autocomplete="off">
+             <!-- Función para buscar el cliente
+             (change)="changeCodigo()" -->
+      <mat-error class="normal" *ngIf="campoNoValido('ruc')">
+                 La cédula <strong>es requerida</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nombres:</mat-label>
+      <input matInput class="normal" 
+             formControlName="nombre"
+             autocomplete="off">
+      <mat-error class="normal" *ngIf="campoNoValido('nombre')">
+                 El nombre <strong>es requerido</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Dirección:</mat-label>
+      <input matInput class="normal"
+             formControlName="direccion"
+             autocomplete="off"> 
+      <mat-error class="normal" *ngIf="campoNoValido('direccion')">
+                 La dirección <strong>es requerida</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Teléfono:</mat-label>
+      <input matInput class="normal"  
+             formControlName="telefono"
+             autocomplete="off"
+             maxlength="10"> 
+      <mat-error class="normal" *ngIf="campoNoValido('telefono')">
+                 El teléfono <strong>es requerido</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label >Email:</mat-label>
+      <input matInput class="normal"  
+             formControlName="email"
+             autocomplete="off"> 
+      <mat-error class="normal" *ngIf="campoNoValido('email')">
+                 La email <strong>es requerido</strong>
+      </mat-error>
+    </mat-form-field>
+
+    <ion-grid class="none">
+      <ion-row class="ion-justify-content-end">
+          <ion-col size="auto">
+               <ion-button class="normal" color="dark" (click)="cancelar()">
+                  cancelar
+               </ion-button>
+          </ion-col>
+          <ion-col size="auto">
+               <ion-button *ngIf="!update" fill="clear" (click)="guardar()"  
+               class="normal boton-primario">
+               ok
+               </ion-button>
+
+               <ion-button *ngIf="update" fill="clear" (click)="updateClient()"  
+               class="normal boton-primario">
+               Actualizar
+               </ion-button>
+
+          </ion-col>
+
+      </ion-row>
+  </ion-grid>
+  </ion-card>
+</form>

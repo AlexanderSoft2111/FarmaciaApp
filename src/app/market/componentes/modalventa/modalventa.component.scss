@@ -1,0 +1,73 @@
+ion-input {
+    background: white;
+    border-radius: 5px;
+}
+
+.icon-add {
+    color: white;
+    display: inline-table;
+    font-size: 20px;
+    background: #28a745;
+}
+
+
+.icon-remove {
+    color: white;
+    display: inline-table;
+    font-size: 20px;
+    background: red;
+}
+
+.cantidad {
+    display: inline-table;
+}
+
+.content-total {
+    background: black !important;
+    border-radius: 5px;
+    padding: 0px 10px 0px 0px;
+}
+
+.total {
+    text-align: end;
+    font-size: 50px;
+    margin: 0px;
+    color: #ecb611;
+    font-weight: bold;
+}
+
+.pago {
+    font-size: 35px;
+    font-weight: bold;
+    color: #ecb611;
+    margin: 0px;
+}
+
+.vuelto-input {
+    padding: 0px;
+    text-align: center;
+    font-size: 30px; 
+    font-weight: bold;
+    margin-left: 25px !important;
+}
+
+input {
+    padding: 4px !important; 
+}
+
+p {
+    margin: 0px;
+    color: black;
+  }
+
+
+  ion-col {
+    align-self: center;
+  }
+  
+  ion-row {
+    border-bottom: 1px solid #343a40;
+    background:#f8f9fa;
+    margin: 5px;
+    padding: 0px;
+  }

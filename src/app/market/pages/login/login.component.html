@@ -1,0 +1,65 @@
+
+  <div class="row justify-content-center align-items-center" style="height: 100%;">
+    <div class="col-sm-4">
+      <form [formGroup]="userForm" (ngSubmit)=ingresar()>
+        <ion-card class="m-0 card">
+          <ion-item detail="false" lines="none" class="none item-native">
+            <ion-label class="text-center">
+              <img src="/assets/img/LogoFarmacia.jpeg" alt="fondo login">
+            </ion-label>
+          </ion-item>
+      
+      
+          <mat-form-field class="normal" appearance="outline" class="full-width" color="primary">
+            <mat-label>Usuario</mat-label>
+            <input matInput class="normal"
+                   formControlName="email" 
+                   autocomplete="off"
+                   type="text">
+            <mat-error class="normal" *ngIf="campoNoValido('email')">
+                       El usuario<strong>es requerido</strong>
+            </mat-error>
+          </mat-form-field>
+      
+          <mat-form-field appearance="outline" class="full-width password">
+            <mat-label>Contrasena:</mat-label>
+            <input matInput class="normal inputPassword" 
+                   formControlName="contrasena"
+                   autocomplete="off"
+                   type="password"
+                   id="password"
+                   (keydown.enter) = "onKeyPress()">
+                   <ion-buttons>
+                    <ion-button class="btnView" (click)="mostrarContrasena()">
+                      <ion-icon slot="icon-only" name="eye"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+            <mat-error class="normal" *ngIf="campoNoValido('contrasena')">
+                       La contraseña <strong>es requerida</strong>
+            </mat-error>
+          </mat-form-field>
+      
+       
+      
+          <ion-grid class="grid">
+            <ion-row class="ion-justify-content-end">
+
+                <ion-col size="12">
+                     <ion-button fill="clear" expand="full" (click)="ingresar()"  
+                     class="normal boton-primario">
+                     Iniciar Sesión
+                     </ion-button>
+      
+                </ion-col>
+      
+            </ion-row>
+        </ion-grid>
+        </ion-card>
+      </form>
+    </div>
+  </div>
+
+
+
+
+

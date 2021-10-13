@@ -1,0 +1,53 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title><strong>Detalle de transacciones Código: {{transaccion.producto.codigo}}</strong></ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close" color="dark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+
+  <ion-row >
+        <ion-col *ngIf="transaccion">
+          <ion-item lines="none" class="none">
+            <ion-label>
+              <p> <strong>Código:</strong> {{transaccion.producto.codigo}}</p>
+              <p> <strong>Descripción:</strong> {{transaccion.producto.descripcion}}</p>
+              <p> <strong>Lote:</strong> {{transaccion.producto.lote}}</p>     
+              <p> <strong>Precion Compra:</strong> {{transaccion.producto.precio_compra | currency}}</p>
+              <p> <strong>Fecha Creación:</strong> {{transaccion.producto.fecha_creacion}}</p>
+              <p> <strong>Fecha Elaboración:</strong> {{transaccion.producto.fecha_elaboracion}}</p>
+              <p> <strong>Fecha Caducidad:</strong> {{transaccion.producto.fecha_caducidad}}</p>
+              <p> <strong>Um:</strong> {{transaccion.um}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+        
+        <ion-col *ngIf="transaccion">
+          <ion-item lines="none" class="none">
+            <ion-label>
+              <p> <strong>Tipo de transacción:</strong> {{transaccion.tipo_transaccion}}</p>
+              <p> <strong>Fecha de registro:</strong>{{transaccion.fecha_transaccion}} </p> 
+              <p> <strong>Número de factura:</strong> {{transaccion.numero_factura}}</p>
+              <p> <strong>Proveedor:</strong> {{transaccion.proveedor}}</p>
+              <p> <strong>Ruc:</strong> {{transaccion.ruc}}</p>     
+              <p> <strong>Cantidad:</strong> {{transaccion.cantidad}}</p>
+              <p> <strong>Precio Venta:</strong> {{transaccion.producto.precio_venta |currency}}</p>
+              <p> <strong>Total:</strong> {{transaccion.cantidad * transaccion.producto.precio_venta | currency}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col>
+          <div class="content-total">
+              <h3 class="total">Cantidad Actual </h3>
+              <h3 class="total"> {{cantidad}} {{transaccion.um}}</h3>
+          </div>
+        </ion-col>
+      </ion-row>
+

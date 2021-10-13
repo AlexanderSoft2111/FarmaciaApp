@@ -1,0 +1,128 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title><strong>Inventario</strong></ion-title>
+    <ion-buttons slot="end">
+      <ion-chip color="dark" (click)="getProductos()">
+        <ion-label>Actualizar</ion-label>
+        <ion-icon name="refresh-circle"></ion-icon>
+      </ion-chip>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large"><strong>Inventario</strong> </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  
+  <div class="p-4">
+
+        <ion-item>
+          <ion-icon slot="start" name="options"></ion-icon>
+          <ion-label position="stacked">Filtrar</ion-label>
+          <ion-input matInput (keyup)="applyFilter($event)" placeholder="Ej. Azitromicina" #input></ion-input>       
+        </ion-item>
+
+        <div class="mat-elevation-z8">
+          
+
+          <table mat-table [dataSource]="dataSource" matSort >
+      
+            <!-- editar -->
+            <ng-container matColumnDef="Acciones">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Acciones</th>
+              <td mat-cell *matCellDef="let row"> 
+                <ion-buttons>
+                  <ion-button class="btn-accion" *ngIf="!vendedor" [routerLink]="['/market/addinventario/' + row.producto.codigo]" routerLinkActive="router-link-active" >
+                    <ion-icon slot="icon-only" name="create"></ion-icon>
+                  </ion-button>
+                  <ion-button class="btn-accion" (click)="copyCodigo(row.producto)">
+                    <ion-icon slot="icon-only" name="copy"></ion-icon>
+                  </ion-button>
+                  <ion-button class="btn-accion" *ngIf="!vendedor" (click)="delete(row)">
+                    <ion-icon color="danger" slot="icon-only" name="trash"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </td>
+            </ng-container>
+                   
+           <!--  <!-- Nombre -->
+          <!--   <ng-container  *ngFor="let campo of campos" [matColumnDef]="campo.campo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> {{campo.label}} </th>
+              <td (click)="setStock($event, row)" mat-cell *matCellDef="let row"> {{row[campo.campo]}} </td>
+            </ng-container> --> -->
+
+            <!-- codigo -->
+            <ng-container  matColumnDef="codigo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Código </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{row.producto.codigo}} </td>
+            </ng-container>
+
+            <!-- descripcion -->
+            <ng-container  matColumnDef="descripcion">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Descripción </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{row.producto.descripcion}} </td>
+            </ng-container>
+
+            <!-- lote -->
+            <ng-container  matColumnDef="lote">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Lote </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{row.producto.lote}} </td>
+            </ng-container>
+
+            <!-- cantidad -->
+            <ng-container  matColumnDef="cantidad">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Cantidad </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{row.cantidad}} </td>
+            </ng-container>
+
+            <!-- um -->
+            <ng-container  matColumnDef="um">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> UM </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{row.um}} </td>
+            </ng-container>
+            
+            <!-- precio_venta -->
+            <ng-container  matColumnDef="precio_venta">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Precio Venta Farmacia </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{row.producto.precio_venta |currency}} </td>
+            </ng-container>
+
+            <!-- total -->
+            <ng-container  matColumnDef="total">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Total </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{(row.cantidad * row.producto.precio_venta) |currency}} </td>
+            </ng-container>
+            
+            <!-- fecha_caducidad -->
+            <ng-container  matColumnDef="fecha_caducidad">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha de caducidad </th>
+              <td (click)="setStock(row)" mat-cell *matCellDef="let row"> {{row.productofecha_caducidad}} </td>
+            </ng-container>
+        
+            <tr style="background: #e3edff;" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                [ngClass]="{'naranja': row.stock <= row.stock_minimo && row.diferencia <= numeroFecha,
+                'red': row.stock <= row.stock_minimo, 'yellow': row.diferencia <= numeroFecha}"></tr>
+        
+            <!-- Row shown when there is no matching data. -->
+            <tr class="mat-row" *matNoDataRow >
+              <td class="mat-cell" colspan="4">Ninguna coincidencia con "{{input.value}}"</td>
+            </tr>
+          </table>
+        
+          <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+        </div>
+      </div>
+      
+      
+
+
+</ion-content>

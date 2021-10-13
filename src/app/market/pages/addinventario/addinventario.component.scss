@@ -1,0 +1,72 @@
+.full-width {
+    width: 100%;
+}
+    
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.col {
+  flex: 1;
+  margin-right: 20px;
+  margin-bottom: 8px;
+}
+
+.col:last-child {
+  margin-right: 0;
+}
+
+
+.card-content {
+    background: white;
+    margin: 10px;
+    border-radius: 10px;
+    border: 1px solid #bebfc1;
+}
+
+.button-next {
+    --background: linear-gradient(90deg, #6dacff 0%, #1a73e8 100%);
+    max-width: 200px;
+    color: white !important;
+    margin-left: auto;
+    border-radius: 8px;
+    &.actualizar{
+        
+        --background: linear-gradient(to right, #FFB75E 0%, #ED8F03  51%, #FFB75E  100%)
+        
+    }
+}
+
+.icon-person {
+    font-size: 40px;
+    color: white;
+    background: linear-gradient(90deg, #ffe891 0%, #f1be00 100%);
+    padding: 15px;
+    border-radius: 50%;
+}
+
+.item-maps {
+    --background: #fff0b6; 
+    border-radius: 15px; 
+    margin: 10px;
+}
+  
+input {
+    border: solid #b0bec5 1px;
+    border-radius: 10px;
+    padding: 10px;
+    margin: -5px 0px 0px -5px;
+}
+
+textarea {
+    border: solid #b0bec5 1px;
+    border-radius: 10px;
+    padding: 10px !important;
+    margin: -5px 0px 0px -5px !important;
+}
+
+ion-menu-button {
+    color: var(--ion-color-primary);
+  }
+  

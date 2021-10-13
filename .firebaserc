@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "appfarmaceutica": {
+      "hosting": {
+        "appfarmaceutica": [
+          "appfarmaceutica"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "appfarmaceutica"
+  }
+}
