@@ -3,7 +3,7 @@ import { PopoverController, ToastController } from '@ionic/angular';
 import { Paths, InvProducto, TransaccionProducto } from '../../../models/models';
 import { FirestoreService } from '../../../services/firestore.service';
 import { InteraccionService } from '../../../services/interaccion.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 
 @Component({
@@ -13,7 +13,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class PopsetstockComponent implements OnInit {
 
-  miFormulario: FormGroup = this.fb.group({
+  miFormulario: UntypedFormGroup = this.fb.group({
     numero_factura: [null, Validators.required],
     proveedor: [null, Validators.required],
     ruc: [null, Validators.required],
@@ -42,7 +42,7 @@ export class PopsetstockComponent implements OnInit {
   constructor(private firestoreService: FirestoreService,
               private interaccionService: InteraccionService,
               private popoverController: PopoverController,
-              private fb: FormBuilder,
+              private fb: UntypedFormBuilder,
               private toastCtrl: ToastController) { }
 
   ngOnInit() {

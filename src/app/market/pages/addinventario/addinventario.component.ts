@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild} from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Paths, Producto, InvProducto } from '../../../models/models';
 import { FirestoreService } from '../../../services/firestore.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,7 +41,7 @@ export class AddinventarioComponent implements OnInit{
   @ViewChild('codigo') codigoInput: IonInput;
   
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private firestoreService: FirestoreService,
               private activatedRoute: ActivatedRoute,
               private interaccionService: InteraccionService,

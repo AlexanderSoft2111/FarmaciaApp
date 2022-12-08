@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { PopoverController, ToastController } from '@ionic/angular';
 import { Cliente, Paths } from '../../../models/models';
 import { FirestoreService } from '../../../services/firestore.service';
@@ -14,7 +14,7 @@ export class PopsetclientComponent implements OnInit {
 
 
 
-  miFormulario: FormGroup = this.fb.group({
+  miFormulario: UntypedFormGroup = this.fb.group({
     nombre: ['', Validators.required],
     ruc: ['', Validators.required],
     direccion: ['', Validators.required],
@@ -29,7 +29,7 @@ export class PopsetclientComponent implements OnInit {
   rucCliente = '';
   titulo = 'Nuevo Cliente';
 
-  constructor(private fb: FormBuilder,
+  constructor(private fb: UntypedFormBuilder,
               private popoverController:PopoverController,
               private toastCtrl: ToastController,
               private firestoreService: FirestoreService,

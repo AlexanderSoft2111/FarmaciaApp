@@ -1,6 +1,6 @@
 
 import { Component, Input, OnInit, ViewChild, NgModule } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FireAuthService } from '../../../services/fire-auth.service';
 import { InteraccionService } from '../../../services/interaccion.service';
@@ -13,12 +13,12 @@ import { Producto } from '../../../models/models';
 })
 export class LoginComponent implements OnInit {
   
-  userForm: FormGroup = this.fb.group({
+  userForm: UntypedFormGroup = this.fb.group({
     email: ['',[Validators.required, Validators.email]],
     contrasena: ['',[Validators.required, Validators.minLength(6)]]
   });
   
-  constructor(private fb:FormBuilder,
+  constructor(private fb:UntypedFormBuilder,
     private fireAuthService:FireAuthService,
     private route:Router,
     private interaccionService:InteraccionService) { }
