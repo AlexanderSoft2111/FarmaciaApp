@@ -12,22 +12,14 @@ export class ModalDetalleComponent implements OnInit {
   @Input() transaccion: TransaccionProducto;
   @Input() cantidad: number = 0;
 
+  constructor(private popoverController: PopoverController) {}
 
-  fecha = new Date();
-  constructor(private popoverController: PopoverController) { 
-
-    
-
-  }
-
-  ngOnInit() {
-
-
-  }
-
+  ngOnInit() {}
 
   closeModal() {
+
       this.popoverController.dismiss();
+      
   }
 
 }

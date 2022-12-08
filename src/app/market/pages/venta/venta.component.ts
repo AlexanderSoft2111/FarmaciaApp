@@ -1,13 +1,13 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { VentaService } from '../../../services/venta.service';
-import { Cliente, Venta, Producto, Paths, ProductoVenta, InvProducto, TransaccionProducto } from '../../../models/models';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { PopoverController } from '@ionic/angular';
+import { jsPDF } from "jspdf";
+
 import { FirestoreService } from '../../../services/firestore.service';
 import { InteraccionService } from '../../../services/interaccion.service';
-import { PopAddProductoComponent } from '../../componentes/pop-add-producto/pop-add-producto.component';
+import { VentaService } from '../../../services/venta.service';
+import { Venta, Paths, ProductoVenta, InvProducto, TransaccionProducto } from '../../../models/models';
 import { PopsetclientComponent } from '../../componentes/popsetclient/popsetclient.component';
-import { jsPDF } from "jspdf";
 
 
 @Component({
@@ -33,11 +33,11 @@ export class VentaComponent implements OnInit, OnDestroy {
               private firestoreService: FirestoreService,
               private interaccionService: InteraccionService,
               private popoverController: PopoverController) {
-        console.log('constructor venta');
+     
         this.venta = this.ventaService.getVenta();
         this.suscriberVenta = this.ventaService.getVentaChanges().subscribe( res => {
               this.venta = res;
-              console.log('getVentaChanges -> ', res);
+    
               this.addProducto();
               this.calcularValores();
               this.changePago();
@@ -58,7 +58,7 @@ export class VentaComponent implements OnInit, OnDestroy {
   }
 
   estado(index: number){
-   console.log("this.isChecked",this.venta.productos[index].producto.producto.descuento);
+   
 
    if(this.venta.productos[index].producto.producto.descuento !== false){
     this.venta.productos[index].producto.producto.precio_venta = this.precioBonificacion;
@@ -99,7 +99,7 @@ export class VentaComponent implements OnInit, OnDestroy {
      await popover.present();
      const { data } = await popover.onWillDismiss();
      if (data) {
-       console.log(data);
+      
        const cliente = data.cliente;
        this.venta.cliente = cliente;
        this.ventaService.saveVenta();
@@ -114,6 +114,7 @@ export class VentaComponent implements OnInit, OnDestroy {
         producto: {
           cantidad: 0,
           um: 'CJ',
+          descripcion: '',
           fecha_ingreso: new Date(),
           producto: {
             codigo: '',
@@ -130,7 +131,7 @@ export class VentaComponent implements OnInit, OnDestroy {
         },
       }
 
-      console.log('this.venta ----->',productoVenta);
+    
        if (!this.venta.productos.length) {
           this.venta.productos.push(productoVenta);
       } else {
@@ -144,7 +145,7 @@ export class VentaComponent implements OnInit, OnDestroy {
   }
 
   changeCodigo(ev: any, index: number) {
-      console.log('changeCodigo() -> ', ev.detail.value);
+  
       if (ev.detail.value.length > 2) {
         this.findProducto(ev.detail.value, index);
       }
@@ -152,12 +153,12 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   findProducto(id: string, index: number) {
     const path = Paths.inventario + id;
-    console.log('este es el path ',path);
+
     this.firestoreService.getDocumentFromCache<InvProducto>(path).then( res => {
         if (res) {
             this.addProductoWithCode(res, index)
         } else {
-           console.log('no existe producto');
+           return
         }
     })
   }
@@ -182,11 +183,10 @@ export class VentaComponent implements OnInit, OnDestroy {
   // que ya existe
   addProductoWithCode(newproducto: InvProducto, index: number) {
       const productoExist = this.venta.productos.find( producto => {
-        console.log('consulta de producto',producto)
+       
              return  producto.producto.producto.codigo === newproducto.producto.codigo;
       });
-      console.log('productoExist  -> ', productoExist );
-
+      
       this.venta.productos[index].producto = newproducto;
           this.ventaService.saveVenta();
           this.addProducto();
@@ -232,35 +232,6 @@ export class VentaComponent implements OnInit, OnDestroy {
       }
   }
 
-  // AGREGA UN NUEVO PRODUCTO DE VENTA RAPIDAMENTE
-/*   async addProductoRapido() {
-    const popover = await this.popoverController.create({
-      component: PopAddProductoComponent,
-      cssClass: 'popoverCss',
-      translucent: false,
-      backdropDismiss: true,
-      mode: 'ios'
-    });
-    await popover.present();
-    const { data } = await popover.onWillDismiss();
-    if (data) {
-      const producto = data as InvProducto;
-      console.log('data -> ', data);
-      const item: ProductoVenta = {
-          cantidad: 1,
-          precio: producto.producto.precio_venta,
-          producto,
-      }
-      if (!this.venta.productos[this.venta.productos.length - 1].producto.producto.codigo) {
-        this.venta.productos[this.venta.productos.length - 1] =  item;
-      } else {
-        this.venta.productos.push(item);
-      }
-      this.ventaService.saveVenta();
-      this.addProducto();
-    }
-
-} */
 
   resetVenta() {
      this.interaccionService.preguntaAlert('Alerta', 
@@ -294,7 +265,7 @@ export class VentaComponent implements OnInit, OnDestroy {
     '¿Terminar y guardar la venta actual?').then( res => {
         if (res) {
             this.venta.detalle = this.detalle;
-            console.log('finalizar venta');
+            
             if (this.pago >= this.venta.total) {
               this.venta.productos.forEach(item => {
 
@@ -311,7 +282,7 @@ export class VentaComponent implements OnInit, OnDestroy {
                     tipo_transaccion: 'Egreso de stock'
                   };
                   
-                  console.log('producto guardado ',transproducto);
+                  
                   
                   const path = `${Paths.transacciones}${item.producto.producto.codigo}/Kardex`;
                   this.firestoreService.createDocument<TransaccionProducto>(transproducto, path);  
@@ -323,7 +294,7 @@ export class VentaComponent implements OnInit, OnDestroy {
               this.pago = 0;
               this.vuelto = 0;
             } else {
-              console.log('El valor pagado es menor el total de la vental');
+              
               this.interaccionService.showToast('El valor pagado es menor el total de la venta', 3000);
             }
         }
@@ -347,44 +318,45 @@ export class VentaComponent implements OnInit, OnDestroy {
   
   doc.setFontSize(10);
   //doc.text("Cliente", 11, 42);    
-  doc.text(this.venta.cliente.nombre, 25, 41);      
+  doc.text(this.venta.cliente.nombre, 17, 41);      
   //doc.text("Ruc", 145, 42);    
-  doc.text(this.venta.cliente.ruc, 157, 41);
+  doc.text(this.venta.cliente.ruc, 162, 41);
   //doc.text("Fecha", 11, 48);      
-  doc.text(`${new Date().toLocaleDateString()}`, 25, 47);                   
+  doc.text(`${new Date().toLocaleDateString()}`, 17, 48);                   
   //doc.text("Telf", 117, 48);    
-  doc.text(this.venta.cliente.telefono, 128, 47);
+  doc.text(this.venta.cliente.telefono, 128, 48);
   //doc.text("Dirección", 11, 54);  
-  doc.text(this.venta.cliente.direccion, 30, 54);
+  doc.text(this.venta.cliente.direccion, 26, 53);
   //doc.text("Email", 11, 60);      
-  doc.text(this.venta.cliente.email, 25, 61);
+  doc.text(this.venta.cliente.email, 17, 60);
   //doc.text("CANT.", 18, 68);      doc.text("DESCRIPCION", 55, 68);   doc.text("V.UNIT.", 166, 68);  doc.text("V.TOTAL", 188, 68);
   
-  let positionX = 73;
+  let positionY = 76;
   this.venta.productos.forEach(producto => {
       if(producto.producto.producto.codigo !== ''){
 
-        doc.text( producto.cantidad.toLocaleString(), 15, positionX);
-        doc.text( producto.producto.producto.descripcion, 35, positionX);
-        doc.text( producto.producto.producto.precio_venta.toLocaleString(), 160, positionX);
-        doc.text( producto.precio.toLocaleString(), 185, positionX);
-        positionX += 6;
+        doc.text( producto.cantidad.toLocaleString(), 10, positionY);
+        doc.text( producto.producto.producto.descripcion, 35, positionY);
+        doc.text( producto.producto.producto.lote, 100, positionY);
+        doc.text( producto.producto.producto.precio_venta.toLocaleString(), 162, positionY);
+        doc.text( producto.precio.toLocaleString(), 192, positionY);
+        positionY += 6;
       } 
       else { return}
   });
-  positionX = 73;
+  positionY = 76;
 
   //doc.text("SUBTOTAL $", 161, 120);     
-  doc.text(`$ ${this.venta.subtotal_sin_iva.toFixed(2)}`, 185, 120);
+  doc.text(`$ ${this.venta.subtotal_sin_iva.toFixed(2)}`, 192, 125);
   //doc.text("DESCUENTO $", 158, 126);         
   //doc.text("I.V.A 0 % $", 161, 132);    
   //doc.text("I.V.A % $", 159, 138);      
-  doc.text(`$ ${this.venta.iva.toFixed(2)}`, 185, 138);
+  doc.text(`$ ${this.venta.iva.toFixed(2)}`, 192, 145);
   //doc.text("TOTAL % $", 166, 144);      
-  doc.text(`$ ${this.venta.total.toFixed(2)}`, 185, 144);
+  doc.text(`$ ${this.venta.total.toFixed(2)}`, 192, 151);
 
   //doc.text('Otros', 12, 135); 
-  doc.text(this.detalle, 37, 135);
+  doc.text(this.detalle, 30, 143);
   doc.save(`Factura_${this.serie}${this.venta.numero}.pdf`);
   }
 

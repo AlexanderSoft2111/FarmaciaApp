@@ -1,29 +1,36 @@
 import { map } from 'rxjs/operators';
 
 export const environment = {
+
   production: false,
- /*  firebaseConfig : {
-    apiKey: "AIzaSyAfv57CfsTQu6_a1V6fmBQ65XDyIW6QLaI",
-    projectId: "appfarmaceutica",
-    storageBucket: "appfarmaceutica.appspot.com",
-    messagingSenderId: "433333229189",
-    appId: "1:433333229189:web:b5807b1077f1dfd68d3bec",
-    measurementId: "G-ZKP82451F8",
-    authDomain: "appfarmaceutica.firebaseapp.com",
-    },
-    uidAdmin: 'uF9Ng3DDPmhUZ1d8EDbGwUlJSby1',
-  isAdmin: (next: any) => map( (user: any) => !!user),  */
 
-
-  firebaseConfig: {
-    apiKey: "AIzaSyAxMfMkkeKntFUUYbRfPRJ0KllR2MzIQo4",
-    authDomain: "appmarket-68601.firebaseapp.com",
-    projectId: "appmarket-68601",
-    storageBucket: "appmarket-68601.appspot.com",
-    messagingSenderId: "157223563753",
-    appId: "1:157223563753:web:d8879df1bdb71600ce9b78"
+  /* firebaseConfig : {
+    apiKey: "AIzaSyDCo6N5Pv91_CBSs64PNxwORVkwHo8V3p8",
+    authDomain: "farmaciaapp-806af.firebaseapp.com",
+    projectId: "farmaciaapp-806af",
+    storageBucket: "farmaciaapp-806af.appspot.com",
+    messagingSenderId: "41337414954",
+    appId: "1:41337414954:web:389f89b80eb1ae1613ea53"
   },
   
-    uidAdmin: 'mkq6K3arNyTydGQLbKL9GcCPRAO2',
-    isAdmin: (next: any) => map( (user: any) => !!user), 
+  uidAdmin: 'XE4gaBzhkbga2Suyid03ppFjcqk1',
+  isAdmin: (next: any) => map( (user: any) => !!user), */
+   firebaseConfig: {
+  apiKey: "AIzaSyAIsxXJrLwgqdQjtAAPzIBxkXu1XvTzu7w",
+  authDomain: "azudist-7fcea.firebaseapp.com",
+  projectId: "azudist-7fcea",
+  storageBucket: "azudist-7fcea.appspot.com",
+  messagingSenderId: "1042935587192",
+  appId: "1:1042935587192:web:9e53e785655b4f89d6288d"
+},
+  
+    uidAdmin: 'X97WHElvz9emgkVVW0XbLnuyBxp2',
+    isAdmin: (next: any) => map( (user: any) => !!user),   
+
+    
+
 };
+
+
+
+

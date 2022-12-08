@@ -28,7 +28,6 @@ export class PopsetclientComponent implements OnInit {
   cliente: Cliente = null;
   rucCliente = '';
   titulo = 'Nuevo Cliente';
-  update = false;
 
   constructor(private fb: FormBuilder,
               private popoverController:PopoverController,
@@ -44,7 +43,6 @@ export class PopsetclientComponent implements OnInit {
 
   recibirCliente(){
     console.log(this.newcliente);
-    this.update = true;
     this.rucCliente = this.newcliente.ruc;
     this.miFormulario.controls['nombre'].setValue(this.newcliente.nombre);
     this.miFormulario.controls['ruc'].setValue(this.newcliente.ruc);
@@ -75,18 +73,6 @@ export class PopsetclientComponent implements OnInit {
              this.popoverController.dismiss({
                cliente: newCliente,      
              }); 
-
-    /* Agregar clientes en la base de datos
-     const path = Paths.clientes;
-       this.firestoreService.createDocumentID<Cliente>(newCliente, path, newCliente.ruc).then( res => {
-             this.interaccionService.showToast('Guardado con éxito');
-             this.miFormulario.reset();
-             this.popoverController.dismiss({
-               cliente: newCliente,      
-             });        
-      }); */
-      
-
     }
   }
 
@@ -118,7 +104,6 @@ export class PopsetclientComponent implements OnInit {
     const path = Paths.clientes + id;
     this.firestoreService.getDocumentFromCache<Cliente>(path).then( res => {
         if (res) {
-            this.update = true;
             this.titulo = 'Editar Cliente';
             this.cliente = res;
             this.miFormulario.controls['nombre'].setValue(this.cliente.nombre);
@@ -128,7 +113,6 @@ export class PopsetclientComponent implements OnInit {
             this.miFormulario.controls['email'].setValue(this.cliente.email);
         } else {
            console.log('no existe producto');
-           this.update = false;
            this.cliente = null;
            this.titulo = 'Nuevo Cliente';
            this.miFormulario.controls['nombre'].setValue('');
@@ -161,10 +145,5 @@ updateClient() {
     this.popoverController.dismiss();
   }
 
-  aceptar() {
-    this.popoverController.dismiss({
-      cliente: this.cliente,      
-    });
-  }
 
 }

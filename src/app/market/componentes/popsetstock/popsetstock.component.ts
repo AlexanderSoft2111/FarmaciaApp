@@ -26,6 +26,7 @@ export class PopsetstockComponent implements OnInit {
     cantidad: null,
     um: 'CJ',
     producto: null,
+    descripcion: '',
     fecha_ingreso: new Date()
   }
   @Input() producto: InvProducto;
@@ -50,16 +51,6 @@ export class PopsetstockComponent implements OnInit {
 
   }
 
-  saveCantidad() {
-    const path = Paths.productos;
-    const updateDoc = {
-      cantidad: this.cantidad
-    }
-    this.firestoreService.updateDocumentID(updateDoc, path, this.invProducto.producto.codigo).then( res => {
-           this.interaccionService.showToast('Guardado con éxito');
-    });
-    this.popoverController.dismiss();
-  } 
 
   cancelar() {
       this.popoverController.dismiss();
@@ -95,6 +86,7 @@ export class PopsetstockComponent implements OnInit {
         cantidad: this.miFormulario.controls['cantidad'].value + this.producto.cantidad,
         um: this.miFormulario.controls['um'].value,
         producto: this.producto.producto,
+        descripcion: this.producto.descripcion,
         fecha_ingreso: new Date()
       };
       
@@ -132,64 +124,8 @@ export class PopsetstockComponent implements OnInit {
   }
 
 
-/*   changeCodigo() {
-    if(this.rucCliente !== null){
-      if(this.rucCliente.length >=10){
-        this.miFormulario.controls['ruc'].setValue(this.rucCliente);
-        this.findProducto(this.rucCliente);
-      }
-    }
-    
- } */
-
-  findProducto(id: string) {
-    const path = Paths.clientes + id;
-    /* this.firestoreService.getDocumentFromCache<Cliente>(path).then( res => {
-        if (res) {
-            this.titulo = 'Editar Cliente';
-            this.cliente = res;
-            this.miFormulario.controls['nombre'].setValue(this.cliente.nombre);
-            this.miFormulario.controls['ruc'].setValue(this.cliente.ruc);
-            this.miFormulario.controls['direccion'].setValue(this.cliente.direccion);
-            this.miFormulario.controls['telefono'].setValue(this.cliente.telefono);
-            this.miFormulario.controls['email'].setValue(this.cliente.email);
-        } else {
-           console.log('no existe producto');
-           this.cliente = null;
-           this.titulo = 'Nuevo Cliente';
-           this.miFormulario.controls['nombre'].setValue('');
-           this.miFormulario.controls['direccion'].setValue('');
-           this.miFormulario.controls['telefono'].setValue('');
-           this.miFormulario.controls['email'].setValue('');
-        }
-    }) */
-}
-
-updateClient() {
-    const path = Paths.clientes;
-    const updateDoc = {
-      nombre: this.miFormulario.controls['nombre'].value,
-      ruc: this.miFormulario.controls['ruc'].value,
-      direccion: this.miFormulario.controls['direccion'].value,
-      telefono: this.miFormulario.controls['telefono'].value,
-      email: this.miFormulario.controls['email'].value,
-    }
-    this.firestoreService.updateDocumentID(updateDoc, path, updateDoc.ruc).then( res => {
-          this.interaccionService.showToast('Guardado con éxito');
-    });
-    this.popoverController.dismiss({
-      cliente: updateDoc,      
-    });
-  }
-
   close() {
     this.popoverController.dismiss();
-  }
-
-  aceptar() {
-    this.popoverController.dismiss({
-     /*  cliente: this.cliente,     */  
-    });
   }
 
 }

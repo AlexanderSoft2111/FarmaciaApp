@@ -7,6 +7,9 @@ import { InteraccionService } from '../../../services/interaccion.service';
 import { IonInput } from '@ionic/angular';
 import { Subject} from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import { FireAuthService } from '../../../services/fire-auth.service';
+import { environment } from 'src/environments/environment.prod';
+
 
 
 @Component({
@@ -33,7 +36,7 @@ export class AddinventarioComponent implements OnInit{
   descripcion = 'Agregar nuevo artículo';
   debouncer: Subject<string> = new Subject();
   update: boolean = false;
-
+  vendedor: boolean = false;
   
   @ViewChild('codigo') codigoInput: IonInput;
   
@@ -42,17 +45,17 @@ export class AddinventarioComponent implements OnInit{
               private firestoreService: FirestoreService,
               private activatedRoute: ActivatedRoute,
               private interaccionService: InteraccionService,
-              private router: Router) { 
-                this.codigoProducto = this.activatedRoute.snapshot.paramMap.get('id');
-                console.log('id -> ',  this.codigoProducto);
-
-              }
-
-  ngOnInit() {
+              private router: Router,
+              private fireAuthService: FireAuthService) { 
+              this.codigoProducto = this.activatedRoute.snapshot.paramMap.get('id');
+              this.permisos();
+            }
+            
+    ngOnInit() {
 
     //Colocamos el foco en el input
       this.focusInputCodigo();
-
+      
       //Se inicializa un observable para hacer la busqueda cada cierto tiempo
       
    this.debouncer
@@ -61,6 +64,21 @@ export class AddinventarioComponent implements OnInit{
         this.findProducto(valor);
       }); 
      
+  }
+
+  permisos(){
+    this.fireAuthService.stateAuth().subscribe( res => {
+      if(res !== null){
+        
+        if (res.uid !== environment.uidAdmin){
+          this.interaccionService.showToast('Debe ser administrador para ingresar a esta pagina');
+          this.router.navigate(['/market/venta']);
+
+        } else {
+          return;
+        }
+      } 
+    });
   }
 
   campoNoValido(campo: string): boolean{
@@ -117,6 +135,7 @@ export class AddinventarioComponent implements OnInit{
               cantidad: null,
               um: 'CJ',
               producto: newArticulo,
+              descripcion: newArticulo.descripcion,
               fecha_ingreso: new Date()
             }
   
@@ -144,6 +163,7 @@ export class AddinventarioComponent implements OnInit{
                   cantidad: null,
                   um: 'CJ',
                   producto: newArticulo,
+                  descripcion: '',
                   fecha_ingreso: new Date()
                 }
             }
@@ -151,7 +171,6 @@ export class AddinventarioComponent implements OnInit{
   }
 
   actualizarProducto(){
-    console.log('se ejecuto actualizando');
     let newArticulo: Producto = {
       codigo: this.articuloForm.controls['codigo'].value,
       descripcion: this.articuloForm.controls['descripcion'].value,
@@ -168,6 +187,7 @@ export class AddinventarioComponent implements OnInit{
       cantidad: this.invProducto.cantidad,
       um: 'CJ',
       producto: newArticulo,
+      descripcion: newArticulo.descripcion,
       fecha_ingreso: new Date()
     }
     this.firestoreService.updateDocumentID<InvProducto>(invProducto, Paths.inventario, invProducto.producto.codigo).then( () => {});  
@@ -206,8 +226,6 @@ export class AddinventarioComponent implements OnInit{
                this.articuloForm.controls['fecha_caducidad'].setValue(this.invProducto.producto.fecha_caducidad);
                this.articuloForm.controls['fecha_elaboracion'].setValue(this.invProducto.producto.fecha_elaboracion);
              } else {
-               console.log('no existe producto', this.invProducto);
- 
                this.update = false;
                this.invProducto = null;
                this.titulo = 'Nuevo Artículo';

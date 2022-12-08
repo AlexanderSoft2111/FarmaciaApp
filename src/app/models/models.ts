@@ -22,6 +22,7 @@ export interface InvProducto {
     cantidad: number;
     um: string;
     producto: Producto;
+    descripcion: string;
     fecha_ingreso: Date
  }
 export interface Producto {
@@ -67,3 +68,4 @@ export interface Producto {
  export interface NumeroVenta {
      numero: number;
  }
+ 

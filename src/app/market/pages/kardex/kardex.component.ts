@@ -1,10 +1,10 @@
-import { Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import { Component, OnInit, ViewChild} from '@angular/core';
 import { Paths, Producto, TransaccionProducto, InvProducto } from '../../../models/models';
 import { FirestoreService } from '../../../services/firestore.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { InteraccionService } from '../../../services/interaccion.service';
 import { IonInput, PopoverController } from '@ionic/angular';
-import { Subject, Subscription} from 'rxjs';
+import { Subject} from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { environment } from '../../../../environments/environment.prod';
 import { MatPaginator } from '@angular/material/paginator';
@@ -54,8 +54,6 @@ export class KardexComponent implements OnInit {
               private interaccionService: InteraccionService,
               private fireAuthService: FireAuthService,
               private router: Router) { 
-/*                 this.codigoProducto = this.activatedRoute.snapshot.paramMap.get('id'); */
-                console.log('id -> ',  this.codigoProducto);
                 this.permisos();
 
               }
@@ -74,7 +72,6 @@ export class KardexComponent implements OnInit {
         if(res !== null){
           if (res.uid === this.uidAdmin){
                 this.vendedor = false;
-                console.log('res.uid -> ', res.uid);
           }
           
         } else{
@@ -108,10 +105,9 @@ buscar(codigo: string) {
              
             }, 300);    
       this.lastDocument = this.productos[this.productos.length - 1];
-      console.log('ultimo registro', this.lastDocument);  
       } 
         else{
-          console.log('no hay productos');
+         return
         }
       }); 
 
@@ -121,7 +117,7 @@ buscar(codigo: string) {
           this.cantidad = res.cantidad;
           this.um = res.um;
           } else{
-            console.log('no hay productos');
+           return
           }
         });
 
@@ -163,7 +159,6 @@ buscar(codigo: string) {
 
   async openModalVenta(transaccion: TransaccionProducto) {
     
-    console.log(typeof transaccion.fecha_transaccion);
      const modal = await this.popoverController.create({
         component: ModalDetalleComponent,
         componentProps: {

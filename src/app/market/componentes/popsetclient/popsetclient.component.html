@@ -6,9 +6,6 @@
         <strong>{{titulo}}</strong>
       </ion-label>
       <ion-buttons slot="end" >
-        <ion-button *ngIf="venta" (click)="aceptar()">
-          <ion-icon slot="icon-only" name="checkbox" color="success"></ion-icon>
-        </ion-button>
         <ion-button (click)="close()">
           <ion-icon slot="icon-only" name="close" color="dark"></ion-icon>
         </ion-button>
@@ -20,10 +17,7 @@
       <mat-label>Cédula o Ruc:</mat-label>
       <input matInput class="normal" maxlength="13" 
              formControlName="ruc" 
-             [(ngModel)]="rucCliente" 
              autocomplete="off">
-             <!-- Función para buscar el cliente
-             (change)="changeCodigo()" -->
       <mat-error class="normal" *ngIf="campoNoValido('ruc')">
                  La cédula <strong>es requerida</strong>
       </mat-error>
@@ -78,14 +72,9 @@
                </ion-button>
           </ion-col>
           <ion-col size="auto">
-               <ion-button *ngIf="!update" fill="clear" (click)="guardar()"  
+               <ion-button fill="clear" (click)="guardar()"  
                class="normal boton-primario">
                ok
-               </ion-button>
-
-               <ion-button *ngIf="update" fill="clear" (click)="updateClient()"  
-               class="normal boton-primario">
-               Actualizar
                </ion-button>
 
           </ion-col>

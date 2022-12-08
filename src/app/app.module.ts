@@ -8,12 +8,14 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { AngularFireModule } from '@angular/fire';
+
 import { environment } from '../environments/environment';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
-import { AngularFireAuthModule } from '@angular/fire/auth';
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFireAuthModule } from '@angular/fire/compat/auth'; 
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { ServiceWorkerModule } from '@angular/service-worker';
+ import { AngularFireModule } from '@angular/fire/compat'; 
+ 
 
 
 
@@ -28,7 +30,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     BrowserAnimationsModule,
     
 
-    //-----FIREBASE-----//
+        //-----FIREBASE-----//
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFirestoreModule.enablePersistence(),
     AngularFireAuthModule,
@@ -36,8 +38,8 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       enabled: environment.production,
       // Register the ServiceWorker as soon as the app is stable
       // or after 30 seconds (whichever comes first).
-      registrationStrategy: 'registerWhenStable:30000'
-    }),
+      registrationStrategy: 'registerWhenStable:30000' 
+    }), 
    
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],

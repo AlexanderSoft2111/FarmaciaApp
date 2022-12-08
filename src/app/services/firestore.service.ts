@@ -2,8 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFirestore,
   AngularFirestoreDocument,
-  AngularFirestoreCollection, 
-  AngularFirestoreCollectionGroup} from '@angular/fire/firestore';
+  AngularFirestoreCollection} from '@angular/fire/compat/firestore';
 
 @Injectable({
   providedIn: 'root'
@@ -25,7 +24,7 @@ export class FirestoreService {
   }
 
   getCollection<tipo>(path: string) {
-    //await this.FireStore.firestore.enableNetwork();
+    
     const itemsCollection: AngularFirestoreCollection<tipo> =
                       this.FireStore.collection<tipo>(path);
     return itemsCollection.ref.get();
@@ -46,36 +45,8 @@ export class FirestoreService {
                         resolve(null);
                       }
                    }).catch ( () => {
-                    console.log('no existe doc');
                     resolve(null);
                    })
-
-/*           await this.FireStore.firestore.disableNetwork();
-          this.getDocument<tipo>(enlace).then( async doc => {
-                if (doc.exists) {
-                  console.log('get from cache');
-                  resolve(doc.data());
-                  return;
-                } else {
-                  console.log('TTTTtrying to get doc from server');
-                   
-                }
-          }).catch( async () => {
-              console.log('trying to get doc from server');
-              await this.FireStore.firestore.enableNetwork();
-                  this.getDocument<tipo>(enlace).then( docServer => {
-                    if (docServer.exists) {
-                      console.log('get doc from server');
-                      resolve(docServer.data());
-                    } else {
-                      console.log('no existe doc');
-                      resolve(null);
-                    }
-                  }).catch( () => {
-                      resolve(null);
-                      console.log('sin conexion');
-                  });
-          }) */
 
     });
   }
@@ -84,10 +55,8 @@ export class FirestoreService {
     return new Promise( async (resolve) => {
       this.getCollection<tipo>(enlace).then( docsServer => {
         if (docsServer.empty) {
-          console.log('no existe Collection');
           resolve(null);
         } else {
-          console.log('get Collection from server');
           const collection: tipo[] = [];
           docsServer.docs.forEach( doc => {
              collection.push(doc.data());
@@ -95,41 +64,6 @@ export class FirestoreService {
           resolve(collection);
         }
      });
-     
- /*      await this.FireStore.firestore.disableNetwork();
-      this.getCollection<tipo>(enlace).then( async docs => {
-            if (!docs.empty) {
-              console.log('get Collection from cache');
-              const collection: tipo[] = [];
-              docs.docs.forEach( doc => {
-                 collection.push(doc.data());
-              })
-              resolve(collection);
-              return;
-            } else {
-
-              console.log('!docs.empty -> trying to get Collection from server');
-               await this.FireStore.firestore.enableNetwork();
-               
-
-            }
-      }).catch( async () => {
-          console.log('trying to get Collection from server');
-          await this.FireStore.firestore.enableNetwork();
-          this.getCollection<tipo>(enlace).then( docsServer => {
-            if (docsServer.empty) {
-              console.log('no existe Collection');
-              resolve(null);
-            } else {
-              console.log('get Collection from server');
-              const collection: tipo[] = [];
-              docsServer.docs.forEach( doc => {
-                  collection.push(doc.data());
-              })
-              resolve(collection);
-            }
-          });
-      }) */
 
   });
 } 

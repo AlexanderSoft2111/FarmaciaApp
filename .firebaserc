@@ -1,14 +1,5 @@
 {
-  "targets": {
-    "appfarmaceutica": {
-      "hosting": {
-        "appfarmaceutica": [
-          "appfarmaceutica"
-        ]
-      }
-    }
-  },
   "projects": {
-    "default": "appfarmaceutica"
+    "default": "azudist-7fcea"
   }
 }

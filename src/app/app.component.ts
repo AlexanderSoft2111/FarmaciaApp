@@ -24,7 +24,7 @@ export class AppComponent {
 
   permisos(){
     this.fireAuthService.stateAuth().subscribe( res => {
-      console.log('este es el estado del usuario: ',res);
+
         if(res !== null){
           if(res.uid === this.uidAdmin){
               this.admin = true;
@@ -48,23 +48,16 @@ export class AppComponent {
        paginas = [
         { title: 'Nueva venta', url: '/market/venta', icon: 'cart' },
         { title: 'Inventario', url: '/market/inventario', icon: 'server' },
-        //{ title: 'Ventas', url: '/market/ventas', icon: 'stats-chart' },
-        { title: 'Kardex', url: '/market/kardex', icon: 'trending-up' },
-        //{ title: 'Clientes', url: '/market/clientes', icon: 'people' },
-        //{ title: 'Nuevo artículo', url: '/market/addinventario', icon: 'add-circle' },
-        //{ title: 'Generar Código', url: '/market/generarCodigo', icon: 'qr-code' },
-        
+        { title: 'Kardex', url: '/market/kardex', icon: 'trending-up' }
       ];  
     } else{
 
       paginas = [
         { title: 'Nueva venta', url: '/market/venta', icon: 'cart' },
-        { title: 'Inventario', url: '/market/inventario', icon: 'server' },
-        //{ title: 'Ventas', url: '/market/ventas', icon: 'stats-chart' },
-        { title: 'Kardex', url: '/market/kardex', icon: 'trending-up' },
-        //{ title: 'Clientes', url: '/market/clientes', icon: 'people' },
         { title: 'Nuevo artículo', url: '/market/addinventario', icon: 'add-circle' },
-        //{ title: 'Generar Código', url: '/market/generarCodigo', icon: 'qr-code' },
+        { title: 'Inventario', url: '/market/inventario', icon: 'server' },
+        { title: 'Kardex', url: '/market/kardex', icon: 'trending-up' },
+  
         
       ];
     }

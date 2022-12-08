@@ -46,14 +46,12 @@ export class VentaService {
 
   setVenta() {
      this.localstorageService.getDoc(this.pathLocal).then( async (res) => {
-        console.log('getVenta -> ', res);
         if (res) {
           this.venta = this.pruebaVenta;
           this.venta.numero = (await this.getNumerVenta()).numero
           this.venta$.next(this.venta);
         } else {
-          this.initVenta();
-          console.log('this.initVenta() -> ', this.venta);        
+          this.initVenta();     
           }
       }); 
   }
@@ -103,7 +101,6 @@ export class VentaService {
     return new Promise((resolve) => {
         const path = Paths.numeroVenta;
         this.firestoreService.getDocument<NumeroVenta>(path).then ( res => {
-            console.log('getNumerVenta() -> ', res.data());
             if (res.exists) {
                 this.numeroVenta = res.data();
                 this.numeroVenta.numero ++;
@@ -120,15 +117,12 @@ export class VentaService {
   }
 
   setNumberVenta() {
-      console.log('setNumberVenta()')
       const path = 'Numeroventa/';
       const id = 'numeroventa';
       const updateDoc: NumeroVenta = {
         numero: this.venta.numero
       }
-      console.log('setNumberVenta() -> ', updateDoc, path, id)
       this.firestoreService.createDocumentID(updateDoc, path, id).then( () => {
-         console.log('guarddo')
       }).catch( error => {
         console.log('error -> setNumberVenta() ', error);
       })
@@ -156,18 +150,6 @@ export class VentaService {
           }).catch( err => {
             console.log('error localstorageService.setDoc -> ', err);
           })
-          
-          /* Codigo para guardar el local storage          
-            this.ventas.push(this.venta);
-           this.ventas$.next(this.ventas); 
-            this.localstorageService.setDoc(path, this.ventas).then( () => {
-                  this.interaccionService.showToast('Venta guardada con éxito');
-                  this.setNumberVenta();
-                  this.resetVenta();
-                  this.interaccionService.dismissLoading();
-          }).catch( err => {
-              console.log('error localstorageService.setDoc -> ', err);
-          }) */
         }
 
   }
@@ -175,7 +157,6 @@ export class VentaService {
   async getVentas() {
       const path = Paths.ventas;
       this.localstorageService.getDoc(path).then( async (res) => {
-          console.log('getVentas() -> ', res);
           if (res) {
               this.ventas = res;
               this.ventas$.next(this.ventas);
@@ -186,7 +167,7 @@ export class VentaService {
   }
 
   disminuirStock() {
-      console.log('disminuirStock()', this.venta.productos);
+
          
       //Se encuentra los items repetidos para sumarlos y devolverlos en un nuevo arreglo
       const miCarritoSinDuplicados = this.venta.productos.reduce((acumulador:ProductoVenta[], valorActual) => {
@@ -206,12 +187,8 @@ export class VentaService {
         }
         return [...acumulador,valorActual];
       }, []);
-      console.log('miCarritoSinDuplicados ',miCarritoSinDuplicados);
-      
-
-
+    
       this.venta.productos = miCarritoSinDuplicados
-
 
       const path = Paths.inventario;
 
@@ -224,7 +201,6 @@ export class VentaService {
                 const updateDoc = {
                   cantidad: item.producto.cantidad - item.cantidad
                 };  
-                console.log('disminuirStock()', updateDoc, path, item.producto.producto.codigo)
                 this.firestoreService.updateDocumentID(updateDoc, path, item.producto.producto.codigo).catch( error => {
                    console.log('error disminuirStock() -> ', error);
                 })
@@ -239,6 +215,7 @@ export class VentaService {
         producto: {
           cantidad: 0,
           um: 'CJ',
+          descripcion: '',
           fecha_ingreso: new Date(),
           producto: {
             codigo: '',
@@ -262,7 +239,6 @@ export class VentaService {
   resetReport() {
      const path = Paths.ventas;  
      this.ventas = [];
-     /* this.localstorageService.setDoc(path, this.ventas); */
      this.ventas$.next(this.ventas);
   }
 

@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FirestoreService } from '../../../services/firestore.service';
-import { Paths, Producto, InvProducto } from '../../../models/models';
+import { Paths, InvProducto } from '../../../models/models';
 
 import {ViewChild} from '@angular/core';
 import {MatPaginator} from '@angular/material/paginator';
@@ -42,9 +42,6 @@ export class InventarioComponent implements OnInit, OnDestroy {
   vendedor = true;
   uidAdmin = environment.uidAdmin;
   desubscribirnos: Subscription;
-
-  numeroFecha = 20;
-  
  
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -59,7 +56,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
               private router: Router) { }
 
   ngOnInit() {
-    //  this.getProductos();
+
     this.permisos();
     
     
@@ -74,7 +71,6 @@ export class InventarioComponent implements OnInit, OnDestroy {
         if(res !== null){
           if (res.uid === this.uidAdmin){
                 this.vendedor = false;
-                console.log('res.uid -> ', res.uid);
           }
           
         } else{
@@ -91,7 +87,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
   getProductos() {
 
    this.desubscribirnos = this.firestoreService.getCollectionProductos<InvProducto>(Paths.inventario).subscribe( res => {
-      console.log("estos son los productos: ",res);
+
       if (res) {
         this.productos = res;
             this.dataSource = new MatTableDataSource(this.productos);
@@ -101,7 +97,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
              
             }, 300);
         } else{
-          console.log('no hay productos');
+          return
         }
       });
   }
@@ -110,11 +106,12 @@ export class InventarioComponent implements OnInit, OnDestroy {
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
+    
     this.dataSource.filter = filterValue.trim().toLowerCase();
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
-    }
+    } 
   }
 
   async setStock(producto: InvProducto) {
