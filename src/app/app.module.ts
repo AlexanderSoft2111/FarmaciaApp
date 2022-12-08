@@ -12,10 +12,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { environment } from '../environments/environment';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth'; 
-import { IonicStorageModule } from '@ionic/storage-angular';
 import { ServiceWorkerModule } from '@angular/service-worker';
- import { AngularFireModule } from '@angular/fire/compat'; 
- 
+import { AngularFireModule } from '@angular/fire/compat'; 
+
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 
 
