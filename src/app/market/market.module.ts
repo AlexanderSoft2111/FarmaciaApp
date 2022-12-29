@@ -10,9 +10,10 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import { IonicModule } from '@ionic/angular';
 
+import { AddinventarioComponent } from './pages/addinventario/addinventario.component';
+import { ClientesComponent } from './pages/clientes/clientes.component';
 import { MarketRoutingModule } from './market-routing.module';
 import { InventarioComponent } from './pages/inventario/inventario.component';
-import { AddinventarioComponent } from './pages/addinventario/addinventario.component';
 import { VentaComponent } from './pages/venta/venta.component';
 import { PopsetstockComponent } from './componentes/popsetstock/popsetstock.component';
 import { PopsetclientComponent } from './componentes/popsetclient/popsetclient.component';
@@ -29,7 +30,8 @@ import { ModalDetalleComponent } from './componentes/modal-detalle/modal-detalle
     PopsetclientComponent,
     LoginComponent,
     KardexComponent,
-    ModalDetalleComponent
+    ModalDetalleComponent,
+    ClientesComponent
   ],
   imports: [
     CommonModule,

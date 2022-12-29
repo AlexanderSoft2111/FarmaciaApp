@@ -97,7 +97,7 @@ export class AddinventarioComponent implements OnInit{
   changeCodigo() {
      this.articuloForm.controls['codigo'].setValue(this.codigoProducto);
 
-       this.debouncer.next(this.codigoProducto); 
+     this.debouncer.next(this.codigoProducto); 
 
       
   }

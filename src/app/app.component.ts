@@ -55,6 +55,7 @@ export class AppComponent {
       paginas = [
         { title: 'Nueva venta', url: '/market/venta', icon: 'cart' },
         { title: 'Nuevo artículo', url: '/market/addinventario', icon: 'add-circle' },
+        { title: 'Clientes', url: '/market/clientes', icon: 'people' },
         { title: 'Inventario', url: '/market/inventario', icon: 'server' },
         { title: 'Kardex', url: '/market/kardex', icon: 'trending-up' },
   

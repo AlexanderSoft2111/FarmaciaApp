@@ -32,6 +32,7 @@
                 <p> <strong>Teléfono:</strong> {{venta.cliente.telefono}}</p>     
                 <p> <strong>Dirección:</strong> {{venta.cliente.direccion}}</p>
                 <p> <strong>Correo:</strong> {{venta.cliente.email}}</p>
+                <p> <strong>Código:</strong> {{venta.cliente.codCliente}}</p>
               </ion-label>
             </ion-item>
        
@@ -90,7 +91,7 @@
                     <p> <strong>{{producto.producto.producto.descripcion}}</strong>  </p>
                   </ion-col>
                   <ion-col  class="text-center">
-                    <p> <strong>{{producto.producto.producto.lote}}</strong>  </p>
+                    <p> <strong>{{producto.producto.producto.lote}} | {{producto.producto.producto.fecha_caducidad}}</strong>  </p>
                   </ion-col> 
                  <ion-col  class="text-center">
                     <p> <strong>{{producto.producto.cantidad}}</strong>  </p> 

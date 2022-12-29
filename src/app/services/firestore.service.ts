@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AngularFirestore,
-  AngularFirestoreDocument,
-  AngularFirestoreCollection} from '@angular/fire/compat/firestore';
+         AngularFirestoreDocument,
+         AngularFirestoreCollection,
+} from '@angular/fire/compat/firestore';
+import { Cliente } from '../models/models';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FirestoreService {
+
+  itemsCollection: AngularFirestoreCollection<Cliente>;
+  items: Observable<Cliente[]>;
 
   constructor(public FireStore: AngularFirestore) { 
   }
@@ -21,13 +26,6 @@ export class FirestoreService {
   getDocument<tipo>(enlace: string) {
       const itemDoc: AngularFirestoreDocument<tipo> = this.FireStore.doc<tipo>(enlace);
       return itemDoc.ref.get();
-  }
-
-  getCollection<tipo>(path: string) {
-    
-    const itemsCollection: AngularFirestoreCollection<tipo> =
-                      this.FireStore.collection<tipo>(path);
-    return itemsCollection.ref.get();
   }
 
   getDocumentChanges <tipo>(enlace: string): Observable<tipo> {
@@ -51,7 +49,7 @@ export class FirestoreService {
     });
   }
 
- getCollectionFromCache<tipo>(enlace: string): Promise<tipo[] | null>  {
+/*  getCollectionFromCache<tipo>(enlace: string): Promise<tipo[] | null>  {
     return new Promise( async (resolve) => {
       this.getCollection<tipo>(enlace).then( docsServer => {
         if (docsServer.empty) {
@@ -66,20 +64,25 @@ export class FirestoreService {
      });
 
   });
-} 
+}*/
 
-  getCollectionProductos<tipo>(enlace: string){
-    const productsCollection: AngularFirestoreCollection<tipo> = this.FireStore.collection<tipo>(enlace);
 
-    return productsCollection.valueChanges();
 
+  getCollection<tipo>(enlace: string): Observable<tipo[]>{
+    
+    const ref = this.FireStore.collection<tipo>(enlace ); 
+    return ref.valueChanges(); 
+    
   }
+ 
+
 
   createDocument<tipo>(data: tipo, enlace: string) {
     const itemsCollection: AngularFirestoreCollection<tipo> =
                       this.FireStore.collection<tipo>(enlace);
     return itemsCollection.add(data);
   }
+
 
   createDocumentID <tipo>(data: tipo, enlace: string, idDoc: string) {
     const itemsCollection: AngularFirestoreCollection<tipo> =

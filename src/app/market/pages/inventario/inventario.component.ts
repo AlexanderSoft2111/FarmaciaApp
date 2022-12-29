@@ -86,7 +86,7 @@ export class InventarioComponent implements OnInit, OnDestroy {
 
   getProductos() {
 
-   this.desubscribirnos = this.firestoreService.getCollectionProductos<InvProducto>(Paths.inventario).subscribe( res => {
+   this.desubscribirnos = this.firestoreService.getCollection<InvProducto>(Paths.inventario).subscribe( res => {
 
       if (res) {
         this.productos = res;

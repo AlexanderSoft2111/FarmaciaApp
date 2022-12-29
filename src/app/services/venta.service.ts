@@ -21,11 +21,13 @@ export class VentaService {
   pruebaVenta = {
     productos: [],
     cliente: {
+      id: '',
       nombre: '',
       ruc: '',
       direccion: '',
       telefono: '',
       email: '',
+      codCliente: ''
     },
     subtotal_sin_iva: 0,
     subtotal_con_iva: 0,
@@ -65,11 +67,13 @@ export class VentaService {
       this.venta = {
         productos: [],
         cliente: {
+          id: '',
           nombre: '',
           ruc: '',
           direccion: '',
           telefono: '',
           email: '',
+          codCliente: '',
         },
         subtotal_sin_iva: 0,
         subtotal_con_iva: 0,
@@ -224,7 +228,7 @@ export class VentaService {
             precio_compra: 0,
             precio_venta: 0,
             descuento: false,
-            fecha_caducidad: new Date(),
+            fecha_caducidad: '',
             fecha_elaboracion: new Date(),
             fecha_creacion: `${new Date().toLocaleString()}`
           },

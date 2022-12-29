@@ -8,15 +8,17 @@ import { InventarioComponent } from './pages/inventario/inventario.component';
 import { VentaComponent } from './pages/venta/venta.component';
 import { LoginComponent } from './pages/login/login.component';
 import { KardexComponent } from './pages/kardex/kardex.component';
+import { ClientesComponent } from './pages/clientes/clientes.component';
 
 
 const routes: Routes = [
+  { path: 'addinventario', component: AddinventarioComponent},
+  { path: 'addinventario/:id', component: AddinventarioComponent},
+  { path: 'clientes', component: ClientesComponent},
   { path: 'inventario', component: InventarioComponent},  
   { path: 'kardex', component: KardexComponent},
-  { path: 'venta', component: VentaComponent},
-   { path: 'addinventario', component: AddinventarioComponent},
-   { path: 'addinventario/:id', component: AddinventarioComponent},
-   {path: 'login', component: LoginComponent}
+  {path: 'login', component: LoginComponent},
+  { path: 'venta', component: VentaComponent}
 ];
 
 @NgModule({

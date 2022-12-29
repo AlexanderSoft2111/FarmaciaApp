@@ -32,18 +32,20 @@ export interface Producto {
     precio_compra: number;
     precio_venta: number;
     descuento: boolean;
-    fecha_caducidad: Date;
+    fecha_caducidad: Date | string;
     fecha_elaboracion?: Date;
     fecha_creacion: string;
  }
 
 
  export interface Cliente {
+     id: string;
      nombre: string;
      ruc: string;
      direccion: string;
      telefono: string;
      email: string;
+     codCliente: string;
  }
 
  export interface Venta {

@@ -27,7 +27,7 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   iva: boolean = false;
   detalle: string = '';
-  encabezados = ['Boni','Código', 'Descripción','Lote', 'Stock', 'Cantidad', 'Precio', 'Total']
+  encabezados = ['Boni','Código', 'Descripción','Lote y Fecha C.', 'Stock', 'Cantidad', 'Precio', 'Total'];
   
   constructor(private ventaService: VentaService,
               private firestoreService: FirestoreService,
@@ -36,8 +36,7 @@ export class VentaComponent implements OnInit, OnDestroy {
      
         this.venta = this.ventaService.getVenta();
         this.suscriberVenta = this.ventaService.getVentaChanges().subscribe( res => {
-              this.venta = res;
-    
+          this.venta = res;
               this.addProducto();
               this.calcularValores();
               this.changePago();
@@ -123,7 +122,7 @@ export class VentaComponent implements OnInit, OnDestroy {
             precio_compra: 0,
             precio_venta: 0,
             descuento: false,
-            fecha_caducidad: new Date(),
+            fecha_caducidad: '',
             fecha_elaboracion: new Date(),
             fecha_creacion: `${new Date().toLocaleString()}`
           },
@@ -156,7 +155,7 @@ export class VentaComponent implements OnInit, OnDestroy {
 
     this.firestoreService.getDocumentFromCache<InvProducto>(path).then( res => {
         if (res) {
-            this.addProductoWithCode(res, index)
+            this.addProductoWithCode(res, index);
         } else {
            return
         }
@@ -329,6 +328,7 @@ export class VentaComponent implements OnInit, OnDestroy {
   doc.text(this.venta.cliente.direccion, 26, 53);
   //doc.text("Email", 11, 60);      
   doc.text(this.venta.cliente.email, 17, 60);
+  doc.text(this.venta.cliente.codCliente, 17, 67);
   //doc.text("CANT.", 18, 68);      doc.text("DESCRIPCION", 55, 68);   doc.text("V.UNIT.", 166, 68);  doc.text("V.TOTAL", 188, 68);
   
   let positionY = 76;
@@ -338,6 +338,8 @@ export class VentaComponent implements OnInit, OnDestroy {
         doc.text( producto.cantidad.toLocaleString(), 10, positionY);
         doc.text( producto.producto.producto.descripcion, 35, positionY);
         doc.text( producto.producto.producto.lote, 100, positionY);
+        doc.text( "|", 122, positionY);
+        doc.text( producto.producto.producto.fecha_caducidad.toLocaleString(), 125, positionY);
         doc.text( producto.producto.producto.precio_venta.toLocaleString(), 162, positionY);
         doc.text( producto.precio.toLocaleString(), 192, positionY);
         positionY += 6;
