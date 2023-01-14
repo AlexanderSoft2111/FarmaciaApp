@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable} from '@angular/core';
 import { NumeroVenta, Venta, Paths, ProductoVenta } from '../models/models';
 import { LocalstorageService } from './localstorage.service';
 import { FirestoreService } from './firestore.service';
@@ -140,7 +140,7 @@ export class VentaService {
   // Guarda la venta final
   async saveVentaTerminada() {
       if (this.venta.productos.length) {
-          await this.interaccionService.presentLoading();
+         await this.interaccionService.presentLoading();
           this.disminuirStock();
           this.venta.fecha = new Date();
           const path = `${Paths.ventas}${this.venta.cliente.ruc}/Facturas`;
@@ -150,7 +150,6 @@ export class VentaService {
             this.setNumberVenta();
             this.resetVenta();
             this.interaccionService.dismissLoading();
-            
           }).catch( err => {
             console.log('error localstorageService.setDoc -> ', err);
           })

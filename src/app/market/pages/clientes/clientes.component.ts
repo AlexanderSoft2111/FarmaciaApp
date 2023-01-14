@@ -4,7 +4,7 @@ import { Paths, Cliente } from '../../../models/models';
 import { PopoverController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import {Clipboard} from '@angular/cdk/clipboard';
-import { writeFile } from 'fs'
+
 
 //Componentes
 import { PopsetclientComponent } from '../../componentes/popsetclient/popsetclient.component';
@@ -18,7 +18,7 @@ import { InteraccionService } from '../../../services/interaccion.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { fstat } from 'fs';
+
 
 
 @Component({
@@ -29,7 +29,7 @@ import { fstat } from 'fs';
 export class ClientesComponent implements OnInit {
   
   clientes: Cliente[] = [];
-  
+
   //Columnas para la tabla
   displayedColumns: string[] = 
   ['editar', 'ruc', 'codCliente', 'nombre', 'direccion', 'telefono', 'email'];
@@ -64,14 +64,8 @@ export class ClientesComponent implements OnInit {
     }
   }
   
-  crear(){
-    writeFile('hola.txt','Hola mundo', (err) => {
-      if(err){
-        return console.log(err);
-      }
-      console.log('Se creo el archivo exitosamente');
-    });
-  }
+
+
 
   ngOnDestroy(){
     this.desubscribirnos.unsubscribe();

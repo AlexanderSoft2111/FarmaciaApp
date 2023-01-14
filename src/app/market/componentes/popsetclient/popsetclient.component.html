@@ -80,19 +80,46 @@
     </mat-form-field>
     
   </form>
-  <ion-item detail="false" class="none item-native">
-    <ion-label>
-      <strong>{{ (update) ? "Actualizar" : "Guardar" }}</strong>
-    </ion-label>
-    <ion-checkbox slot="start" 
-                  [(ngModel)]="checkSave.selected"
-                  [color]="checkSave.color">
-    </ion-checkbox>
-  </ion-item>
 
-  <ion-grid>
+  <div *ngIf="venta">
+
+    <ion-item detail="false" class="none item-native">
+      <ion-label>
+        <strong>{{ (update) ? "Actualizar" : "Guardar" }}</strong>
+      </ion-label>
+      <ion-checkbox slot="start" 
+                    [(ngModel)]="checkSave.selected"
+                    [color]="checkSave.color">
+      </ion-checkbox>
+    </ion-item>
+  
+    <ion-grid>
+      
+      <ion-row class="ion-justify-content-end" *ngIf="checkSave.selected">
+        
+        <ion-col size="auto">
+          <ion-button class="normal" color="dark" (click)="cancelar()">
+                cancelar
+              </ion-button>
+        </ion-col>
+        <ion-col size="auto">
+          <ion-button *ngIf="!update" fill="clear" (click)="guardar()"  
+          class="normal boton-primario">
+          ok
+        </ion-button>
+        
+        <ion-button *ngIf="update" fill="clear" (click)="updateClient()"  
+        class="normal boton-primario">
+        Actualizar
+      </ion-button>
+    </ion-col>
+    </ion-row>
+    </ion-grid>
+  </div>
+  
+  <ion-grid *ngIf="!venta">
     
-    <ion-row class="ion-justify-content-end" *ngIf="checkSave.selected">
+    <ion-row class="ion-justify-content-end">
       
       <ion-col size="auto">
         <ion-button class="normal" color="dark" (click)="cancelar()">

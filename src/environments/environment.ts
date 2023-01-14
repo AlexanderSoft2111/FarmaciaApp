@@ -15,9 +15,9 @@ export const environment = {
   
     uidAdmin: 'XE4gaBzhkbga2Suyid03ppFjcqk1',
     isAdmin: (next: any) => map( (user: any) => !!user),   
-
-    
-
+    email: 'alex.tofis21@gmail.com',
+    contrasenaMail: 'ekxguvptkermxhuc',
+    urlApiEmail: 'http://localhost:5000/farmaciaapp-806af/us-central1'
 };
 
 

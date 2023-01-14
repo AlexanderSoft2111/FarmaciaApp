@@ -12,8 +12,11 @@ export const environment = {
     messagingSenderId: '41337414954'
   },
       
-        uidAdmin: 'XE4gaBzhkbga2Suyid03ppFjcqk1',
-        isAdmin: (next: any) => map( (user: any) => !!user),   
+  uidAdmin: 'XE4gaBzhkbga2Suyid03ppFjcqk1',
+  isAdmin: (next: any) => map( (user: any) => !!user),
+  email: 'alex.tofis21@gmail.com',
+  contrasenaMail: 'ekxguvptkermxhuc',
+  urlApiEmail: 'https://us-central1-farmaciaapp-806af.cloudfunctions.net'   
 };
 
 

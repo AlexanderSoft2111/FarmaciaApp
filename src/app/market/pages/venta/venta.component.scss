@@ -54,7 +54,7 @@ ion-input {
 .checkboxIva{
     margin: 0;
     position: absolute;
-    left: 38%;
+    right: 5%;
 }
 
 input {
@@ -64,4 +64,9 @@ input {
 .container-dias-pagar{
     display: flex;
     align-items: center;
+}
+
+.barcode{
+    z-index: -1;
+
 }

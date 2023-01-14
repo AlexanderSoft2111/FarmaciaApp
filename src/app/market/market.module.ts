@@ -21,6 +21,8 @@ import { LoginComponent } from './pages/login/login.component';
 import { KardexComponent } from './pages/kardex/kardex.component';
 import { ModalDetalleComponent } from './componentes/modal-detalle/modal-detalle.component';
 
+import { NgxBarcodeModule } from 'ngx-barcode';
+
 @NgModule({
   declarations: [
     InventarioComponent,
@@ -45,7 +47,8 @@ import { ModalDetalleComponent } from './componentes/modal-detalle/modal-detalle
     MatCheckboxModule,
     MatTableModule,
     MatPaginatorModule,
-    ClipboardModule
+    ClipboardModule,
+    NgxBarcodeModule
   ]
 })
 export class MarketModule { }

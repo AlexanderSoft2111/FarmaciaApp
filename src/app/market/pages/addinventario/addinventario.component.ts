@@ -121,6 +121,7 @@ export class AddinventarioComponent implements OnInit{
             let newArticulo: Producto = {
   
               codigo: this.articuloForm.controls['codigo'].value,
+              codigoAux: '',
               descripcion: this.articuloForm.controls['descripcion'].value,
               lote: this.articuloForm.controls['lote'].value,
               precio_compra: this.articuloForm.controls['precio_compra'].value,

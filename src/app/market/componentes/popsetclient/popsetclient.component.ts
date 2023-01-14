@@ -30,6 +30,7 @@ export class PopsetclientComponent implements OnInit {
 
   cliente: Cliente = null;
   rucCliente = '';
+  idCliente = '';
   titulo = 'Nuevo Cliente';
   update = false;
   checkSave = {
@@ -47,6 +48,7 @@ export class PopsetclientComponent implements OnInit {
     if(this.newcliente !== undefined){
       this.update = true;
       this.recibirCliente();
+      console.log('este es el id',this.newcliente.id);
     }
   }
   
@@ -55,6 +57,10 @@ export class PopsetclientComponent implements OnInit {
   }
   
   aceptar() {
+    if(this.cliente === null){
+      this.showToast('Debe llenar los datos del cliente');
+      return;
+    }
     this.popoverController.dismiss({
       cliente: this.cliente,      
     });
@@ -90,6 +96,7 @@ export class PopsetclientComponent implements OnInit {
             this.update = true;
             this.titulo = 'Editar Cliente';
             this.cliente = res[0];
+            console.log(this.cliente.id);
             this.miFormulario.controls['nombre'].setValue(this.cliente.nombre);
             this.miFormulario.controls['ruc'].setValue(this.cliente.ruc);
             this.miFormulario.controls['direccion'].setValue(this.cliente.direccion);
@@ -136,6 +143,7 @@ export class PopsetclientComponent implements OnInit {
   }
 
   recibirCliente(){
+    this.idCliente = this.newcliente.id;
     this.rucCliente = this.newcliente.ruc;
     this.miFormulario.controls['nombre'].setValue(this.newcliente.nombre);
     this.miFormulario.controls['ruc'].setValue(this.newcliente.ruc);
@@ -166,12 +174,12 @@ updateClient() {
       codCliente: this.miFormulario.controls['codCliente'].value,
     }
 
-    this.firestoreService.updateDocumentID(updateDoc, path, this.newcliente.id).then( () => {
+    this.firestoreService.updateDocumentID(updateDoc, path, this.cliente.id).then( () => {
           this.interaccionService.showToast('Actualizado con éxito');
     });
 
     this.popoverController.dismiss({
       cliente: updateDoc,      
-    });
+    }); 
   }
 }

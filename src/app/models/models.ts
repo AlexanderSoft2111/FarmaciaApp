@@ -27,6 +27,7 @@ export interface InvProducto {
  }
 export interface Producto {
     codigo: string;
+    codigoAux?: string;
     descripcion: string;
     lote: string;
     precio_compra: number;
@@ -46,6 +47,12 @@ export interface Producto {
      telefono: string;
      email: string;
      codCliente: string;
+     tipoIdentificacionComprador?:    
+     { tipo: 'RUC', codigo: '04' } |
+     { tipo: 'Cédula', codigo: '05' } |
+     { tipo: 'Pasaporte', codigo: '06' } |
+     { tipo: 'Consumidor final', codigo: '07' } |
+     { tipo: 'Identificaión del Exterior', codigo: '08' }
  }
 
  export interface Venta {
@@ -65,9 +72,45 @@ export interface Producto {
     cantidad: number;
     producto: InvProducto;
     precio: number;
+    descuento?: number;
+    type?: 'iva' | 'no_iva' | 'no_objeto_iva'
  }
 
  export interface NumeroVenta {
      numero: number;
  }
+
+ export interface DatosUserAzudist {
+    plan: string;
+    ruc: string;
+    razonSocial: string;
+    nombreComercial: string;
+    rucDoc: {nombre: string, path: string, pdf: string}
+    logo: string;
+    firmaElecDoc: {nombre: string, path: string, pdf: string};
+    passwordFirma: string;
+    establecimiento: string;
+    ptoEmision: string;
+    secuencial: {
+        factura: number,
+        notaCredito: number,
+        notaDebito: number,
+        guiaRemision: number,
+        comprobanteRetencion: number
+    }
+    celular: InputPhone
+    dirMatriz: string;
+    dirEstablecimiento: string;
+    obligadoContabilidad: 'SI' | 'NO';
+    ambiente?: 1 | 2;
+}
+
+export interface InputPhone {
+    countryCode: string;
+    number: string;
+    e164Number: string;
+  }
+
+export type TipoComprobanteI = 'factura' | 'notaCredito' | 'notaDebito' | 'guiaRemision' | 'comprobanteRetencion';
+
  
