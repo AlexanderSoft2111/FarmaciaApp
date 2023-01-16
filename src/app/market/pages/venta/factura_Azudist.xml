@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<factura id="comprobante" version="1.0.0">
+    <infoTributaria>
+        <ambiente>2</ambiente>
+        <tipoEmision>1</tipoEmision>
+        <razonSocial>MORAN VIDAL JUAN PABLO</razonSocial>
+        <nombreComercial>AZUDIST</nombreComercial>
+        <ruc>0103663357001</ruc>
+        <claveAcceso>1601202301010366335700120011000000000541601054315</claveAcceso>
+        <codDoc>01</codDoc>
+        <estab>001</estab>
+        <ptoEmi>100</ptoEmi>
+        <secuencial>000000054</secuencial>
+        <dirMatriz>Camino del tejar 4-30 camino a las pencas</dirMatriz>
+    </infoTributaria>
+    <infoFactura>
+        <fechaEmision>16/01/2023</fechaEmision>
+        <dirEstablecimiento>Camino del tejar 4-30 camino a las pencas</dirEstablecimiento>
+        <obligadoContabilidad>NO</obligadoContabilidad>
+        <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+        <razonSocialComprador>Alexander Bautista Granda</razonSocialComprador>
+        <identificacionComprador>0107563363001</identificacionComprador>
+        <direccionComprador>Quinta Chica 35</direccionComprador>
+        <totalSinImpuestos>27.6</totalSinImpuestos>
+        <totalDescuento>0</totalDescuento>
+        <totalConImpuestos>
+            <totalImpuesto>
+                <codigo>2</codigo>
+                <codigoPorcentaje>0</codigoPorcentaje>
+                <baseImponible>27.6</baseImponible>
+                <valor>0</valor>
+            </totalImpuesto>
+        </totalConImpuestos>
+        <propina>0</propina>
+        <importeTotal>27.6</importeTotal>
+        <moneda>DOLAR</moneda>
+        <pagos>
+            <pago>
+                <formaPago>01</formaPago>
+                <total>27.6</total>
+            </pago>
+        </pagos>
+    </infoFactura>
+    <detalles>
+        <detalle>
+            <codigoPrincipal>A-001</codigoPrincipal>
+            <codigoAuxiliar>A-001</codigoAuxiliar>
+            <descripcion>3 DERMICO 30GR</descripcion>
+            <cantidad>3</cantidad>
+            <precioUnitario>5.6</precioUnitario>
+            <descuento>0</descuento>
+            <precioTotalSinImpuesto>16.8</precioTotalSinImpuesto>
+            <impuestos>
+                <impuesto>
+                    <codigo>2</codigo>
+                    <codigoPorcentaje>0</codigoPorcentaje>
+                    <tarifa>0</tarifa>
+                    <baseImponible>16.8</baseImponible>
+                    <valor>16.8</valor>
+                </impuesto>
+            </impuestos>
+        </detalle>
+        <detalle>
+            <codigoPrincipal>A-002</codigoPrincipal>
+            <codigoAuxiliar>A-002</codigoAuxiliar>
+            <descripcion>Paracetamol</descripcion>
+            <cantidad>2</cantidad>
+            <precioUnitario>5.4</precioUnitario>
+            <descuento>0</descuento>
+            <precioTotalSinImpuesto>10.8</precioTotalSinImpuesto>
+            <impuestos>
+                <impuesto>
+                    <codigo>2</codigo>
+                    <codigoPorcentaje>0</codigoPorcentaje>
+                    <tarifa>0</tarifa>
+                    <baseImponible>10.8</baseImponible>
+                    <valor>10.8</valor>
+                </impuesto>
+            </impuestos>
+        </detalle>
+    </detalles>
+</factura>

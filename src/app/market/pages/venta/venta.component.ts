@@ -1,16 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { async, finalize, Subscription } from 'rxjs';
+import { async, finalize, Observable, Subscription } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+
 import { PopoverController } from '@ionic/angular';
+
+//Generacion de PDF
 import { jsPDF } from "jspdf";
 import autoTable from 'jspdf-autotable';
 import { PDFDocument } from 'pdf-lib';
 
 
-
 import { FirestoreService } from '../../../services/firestore.service';
 import { InteraccionService } from '../../../services/interaccion.service';
 import { VentaService } from '../../../services/venta.service';
-import { Venta, Paths, ProductoVenta, InvProducto, TransaccionProducto } from '../../../models/models';
+import { Venta, Paths, ProductoVenta, InvProducto, TransaccionProducto, DetVentaProducto} from '../../../models/models';
 import { PopsetclientComponent } from '../../componentes/popsetclient/popsetclient.component';
 import { SriService } from '../../../services/sri.service';
 
@@ -18,6 +21,10 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 import domtoimage from 'dom-to-image';
 import { NotificacionesService } from '../../../services/notificaciones.service';
+import { environment } from '../../../../environments/environment';
+import { ComprobanteRecibidoSri } from 'src/app/models/sriResponse';
+import { map } from 'rxjs/operators';
+import { autorizaComprobante } from 'src/app/models/sriAutoriza';
 
 
 @Component({
@@ -36,6 +43,7 @@ export class VentaComponent implements OnInit, OnDestroy {
   precio_venta: number = 0;
   estructuraFactura: any;
   para: string = '';
+  clienteNombre: string = '';
 
   iva: boolean = false;
   detalle: string = '';
@@ -49,17 +57,18 @@ export class VentaComponent implements OnInit, OnDestroy {
     razonSocial: 'MORAN VIDAL JUAN PABLO',
     nombreComercial: 'AZUDIST',
     ruc: '0103663357001',
-    claveAcceso: '2110201101179214673900110020010000000011234567813',
     codDoc: '01',
-    estab: '002',
-    ptoEmi: '001',
-    secuencial: '000000001',
+    estab: '001',
+    ptoEmi: '100',
     dirMatriz: 'Camino del tejar 4-30 camino a las pencas',
   }
 
-  
+  claveAcceso: string = '';
+  respuestaSri: string = '';
+  autorizacion: string = '';
+
   elementType: "canvas" | "img" | "svg" = 'svg';
-  value = this.infoTributaria.claveAcceso;
+  value = '123'//this.claveAcceso;
   format: "" | "CODE128" | "CODE128A" | "CODE128B" | "CODE128C" | "EAN" | "UPC" | "EAN8" | "EAN5" | "EAN2" | "CODE39" | "ITF14" | "MSI" | "MSI10" | "MSI11" | "MSI1010" | "MSI1110" | "pharmacode" | "codabar" = 'CODE128';
   lineColor = '#000000';
   width = 70;
@@ -75,6 +84,7 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   codigoBarras: any;
   fileTmp: any;
+  pdf: any;
 
   get values(): string[] {
     return this.value.split('\n')
@@ -87,7 +97,8 @@ export class VentaComponent implements OnInit, OnDestroy {
               private popoverController: PopoverController,
               private sriService: SriService,
               private storage: AngularFireStorage,
-              private notificacionesService: NotificacionesService) {
+              private notificacionesService: NotificacionesService,
+              private http: HttpClient) {
      
         this.venta = this.ventaService.getVenta();
         this.suscriberVenta = this.ventaService.getVentaChanges().subscribe( res => {
@@ -110,6 +121,34 @@ export class VentaComponent implements OnInit, OnDestroy {
     if (this.suscriberVenta) {
       this.suscriberVenta.unsubscribe();
     }
+  }
+
+  enviarFacturaSri(facBase64: string){
+    const urlFirma = environment.firmaP12;
+    const passFirma = environment.passFirma;
+    const urlEnviarComp = environment.urlApiSriRecibirComprobante;
+    return this.http.post<ComprobanteRecibidoSri>(urlEnviarComp,{
+      xmlBase64: facBase64,
+      firmaP12: urlFirma,
+      passFirma: passFirma
+    }).pipe(
+      map( res => {
+        return res.data
+      })
+    );
+  }
+
+  autorizarFacturaSri(claveAcceso: string){
+
+    const urlAutorComp = environment.urlApiSriAutorizarComprobante;
+    return this.http.post<autorizaComprobante>(urlAutorComp,{
+      claveAcceso: claveAcceso,
+      ambiente: 2
+    }).pipe(
+      map( res => {
+        return res.data.sriResponse.respuestaAutorizacionComprobante.autorizaciones[0].autorizacion[0].estado
+      })
+    );
   }
 
 
@@ -169,8 +208,8 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.setFont('times','normal',400);
       doc.text(this.infoTributaria.ruc, 150, 20);   
       doc.text(numFactura, 150, 40);
-      doc.text(this.infoTributaria.claveAcceso, 120, 53);   
-      doc.text("PRUEBA", 150, 70); //AMBIENTE   
+      doc.text(this.claveAcceso, 120, 53);   
+      doc.text("PRODUCCION", 150, 70); //AMBIENTE   
       doc.text("NORMAL", 150, 78); //EMISIÓN   
       doc.text(this.infoTributaria.dirMatriz.toUpperCase(), 43, 82);    
       doc.text(this.infoTributaria.dirMatriz.toUpperCase(), 43, 90);    
@@ -247,7 +286,7 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.rect(15,270,60,6); doc.rect(75,270,20,6);
       doc.rect(15,276,60,5); doc.rect(75,276,20,5);
       doc.text('SIN UTILIZACIÓN DEL SISTEMA FINANCIERO', 18, 280);
-      doc.text(this.infoTributaria.claveAcceso, 125, 110); //CLAVE DE ACCESO   
+      doc.text(this.claveAcceso, 125, 110); //CLAVE DE ACCESO   
 
       autoTable(doc, {
         head: [this.headerTable],
@@ -288,17 +327,13 @@ export class VentaComponent implements OnInit, OnDestroy {
       const urlPdf = await this.uploadFile(file,path,nombreArchivo);
       
       //Estructura del email
-      const pdf = {
+      this.pdf = {
         name: nombreArchivo,
         docUrl: urlPdf,
         para: this.para,
-        cliente: this.venta.cliente.nombre,
+        cliente: this.clienteNombre,
         numFactura
       }
-
-      //Enviamos correo
-      this.sendEmail(pdf);
-
       
     }).catch( ( error ) => {
       console.error('Error: ', error);
@@ -336,42 +371,71 @@ export class VentaComponent implements OnInit, OnDestroy {
 
 
   async facturar() {
-   /*  console.log('facturar() -> ', this.venta);
-    const estructuraFactura = await this.sriService.p_generar_factura_xml();
-    this.estructuraFactura = estructuraFactura; */
-    const pdf = this.generarPDF();
-    //if (estructuraFactura) {
-      //console.log('xml -> ', estructuraFactura);
-      //console.log(estructuraFactura.factura._id);
-    //}
+    const numFactura = this.serie + this.venta.numero;
 
-    /* const res = await this.interaccionService.preguntaAlert('Alerta', 
-    '¿Seguro desea facturar la venta actual?');
-    if (res) {
-        await this.interaccionService.presentLoading('Facturando...')
-        this.venta.ruc = this.venta.cliente.ruc;
-        let indexsToRemove: number[] = [];
-        this.venta.productos.forEach( (producto, index) => {
-            if (!producto.producto.descripcion && !producto.producto.codigo || !producto.cantidad) {
-              indexsToRemove.push(index);
-            }
-        });
-        indexsToRemove.reverse();
-        indexsToRemove.forEach(index => {
-          this.venta.productos.splice(index, 1);
-        });
-        const uid = await this.ventaService.getUidVenta();
-        const path = 'Usuarios/' + uid + '/facturas';
-        await this.firestoreService.createDocumentID(this.venta, path, this.venta.id).catch( error => {
-              this.interaccionService.dismissLoading();
-              this.interaccionService.showToast('Error al guardar la factura');
-        });
-        this.interaccionService.dismissLoading();
-        this.interaccionService.showToast('Factura guardada con éxito');
-        this.ventaService.resetVenta();
-        this.router.navigate(['/']);
+    const arrDetalle: DetVentaProducto[] = [];
+
+    this.venta.productos.forEach( producto => {
+      const productoDetalle: DetVentaProducto = {
+        codigoPrincipal: producto.producto.producto.codigo,
+        codigoAuxiliar: producto.producto.producto.codigo,
+        descripcion: producto.producto.producto.descripcion,
+        cantidad: producto.cantidad,
+        precioUnitario: Number(producto.producto.producto.precio_venta.toFixed(2)),
+        descuento: 0,
+        precioTotalSinImpuesto: Number(producto.precio.toFixed(2)),
+        impuestos: {
+          impuesto:  {
+            codigo: 2,
+            codigoPorcentaje: 0,
+            tarifa: 0,
+            baseImponible: Number(producto.precio.toFixed(2)),
+            valor: Number(producto.precio.toFixed(2)),
+          }
+        }
+      };
+
+      arrDetalle.push(productoDetalle);
+    });
+      arrDetalle.pop();
+    const estructuraFactura = await this.sriService.p_generar_factura_xml(numFactura, this.venta, arrDetalle);
+    this.estructuraFactura = estructuraFactura;
+    const factBase64 = btoa(this.estructuraFactura);
+
+    if (estructuraFactura) {
+     /*  console.log('xml', estructuraFactura);
+      console.log('xml - base64', factBase64); */
+      this.enviarFacturaSri(factBase64).subscribe(async res => {
+        if(res){
+          console.log(res);
+          this.respuestaSri = res.sriResponse.respuestaRecepcionComprobante.estado[0];
+          this.claveAcceso = res.claveAcceso;
+/*           console.log('respuesta SRI', respuestaSri); */
+        }
+      });
     }
-     */
+    this.generarPDF();
+
+    setTimeout(() => {
+      if(this.respuestaSri = 'RECIBIDA'){
+          this.autorizarFacturaSri(this.claveAcceso).subscribe(async (res) => {
+            if(res){
+              this.autorizacion = res[0];  
+              if(this.autorizacion = 'AUTORIZADO'){
+                      //Enviamos correo
+                this.sendEmail(this.pdf);
+                await this.ventaService.saveVentaTerminada();
+                console.log('Su comprobante se autorizo correctamente');
+              } else {
+                this.interaccionService.showToast('No se pudo autorizar su comprobante por favor hable con el administrador del sistema',500);
+              }
+            };
+          }); 
+      } else {
+        this.interaccionService.showToast('el SRI no acepto el comprobante por favor hable con el administrador del sistema',500);
+      }
+    }, 6000);
+
   }
 
   
@@ -392,8 +456,9 @@ export class VentaComponent implements OnInit, OnDestroy {
             this.venta.detalle = this.detalle;
             
             if (this.pago >= this.venta.total) {
-             
               this.para = this.venta.cliente.email;
+              this.clienteNombre = this.venta.cliente.nombre;
+              await this.facturar();
               this.venta.productos.forEach(item => {
 
                 if(item.producto.producto.codigo !== ''){
@@ -414,8 +479,6 @@ export class VentaComponent implements OnInit, OnDestroy {
                 } else { return}
                 
               });
-              this.generarPDF();
-              await this.ventaService.saveVentaTerminada();
               
               this.pago = 0;
               this.vuelto = 0;

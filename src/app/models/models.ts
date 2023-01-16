@@ -105,6 +105,27 @@ export interface Producto {
     ambiente?: 1 | 2;
 }
 
+export interface DetVentaProducto {
+    codigoPrincipal: string;
+    codigoAuxiliar: string;
+    descripcion: string;
+    cantidad: number;
+    precioUnitario: number;
+    descuento: number;
+    precioTotalSinImpuesto: number;
+    impuestos: VentaPorductoImpuestos
+}
+
+export interface VentaPorductoImpuestos{
+    impuesto:  {
+        codigo: number;
+        codigoPorcentaje: number;
+        tarifa: number;
+        baseImponible: number;
+        valor: number;
+    }
+}
+
 export interface InputPhone {
     countryCode: string;
     number: string;

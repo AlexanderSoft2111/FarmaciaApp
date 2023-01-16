@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<factura id="comprobante" version="1.0.0">
+    <infoTributaria>
+        <ambiente>1</ambiente>
+        <tipoEmision>1</tipoEmision>
+        <razonSocial>JUAN PABLO SERRANO</razonSocial>
+        <nombreComercial>JUAN PABLO SERRANO</nombreComercial>
+        <ruc>0102898129001</ruc>
+        <claveAcceso>0901202301010289812900110011000000000500901050912</claveAcceso>
+        <codDoc>01</codDoc>
+        <estab>001</estab>
+        <ptoEmi>100</ptoEmi>
+        <secuencial>000000050</secuencial>
+        <dirMatriz>cuenca</dirMatriz>
+    </infoTributaria>
+    <infoFactura>
+        <fechaEmision>09/01/2023</fechaEmision>
+        <dirEstablecimiento>cuenca</dirEstablecimiento>
+        <obligadoContabilidad>NO</obligadoContabilidad>
+        <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
+        <razonSocialComprador>JUAN PABLO HURTADO</razonSocialComprador>
+        <identificacionComprador>0104621198</identificacionComprador>
+        <direccionComprador>CUENCA</direccionComprador>
+        <totalSinImpuestos>30.00</totalSinImpuestos>
+        <totalDescuento>0.00</totalDescuento>
+        <totalConImpuestos>
+            <totalImpuesto>
+                <codigo>2</codigo>
+                <codigoPorcentaje>0</codigoPorcentaje>
+                <descuentoAdicional>0</descuentoAdicional>
+                <baseImponible>30.00</baseImponible>
+                <tarifa>0</tarifa>
+                <valor>0.00</valor>
+            </totalImpuesto>
+        </totalConImpuestos>
+        <propina>0.00</propina>
+        <importeTotal>30.00</importeTotal>
+        <moneda>DOLAR</moneda>
+        <pagos>
+            <pago>
+                <formaPago>20</formaPago>
+                <total>30.00</total>
+                <plazo>0</plazo>
+                <unidadTiempo>dias</unidadTiempo>
+            </pago>
+        </pagos>
+    </infoFactura>
+    <detalles>
+        <detalle>
+            <codigoPrincipal>001</codigoPrincipal>
+            <codigoAuxiliar>001</codigoAuxiliar>
+            <descripcion>Servicio EDOC</descripcion>
+            <cantidad>1</cantidad>
+            <precioUnitario>30.00</precioUnitario>
+            <descuento>0</descuento>
+            <precioTotalSinImpuesto>30.00</precioTotalSinImpuesto>
+            <impuestos>
+                <impuesto>
+                    <codigo>2</codigo>
+                    <codigoPorcentaje>0</codigoPorcentaje>
+                    <tarifa>0</tarifa>
+                    <baseImponible>30.00</baseImponible>
+                    <valor>0.00</valor>
+                </impuesto>
+            </impuestos>
+        </detalle>
+    </detalles>
+    <infoAdicional>
+        <campoAdicional nombre="FORMA DE PAGO">Pago en efectivo</campoAdicional>
+    </infoAdicional>
+</factura>

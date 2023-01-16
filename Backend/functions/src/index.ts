@@ -35,11 +35,11 @@ app.post("/sendEmail", async (req, res) => {
   const email = req.headers.email;
   const password = req.headers.password;
 
-  console.log(req.headers);
+  //console.log(req.headers);
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465, // 587 otros puertos
-    secure: true, // true for 465, false for other ports
+    host: 'smtp-mail.outlook.com',//para outlook smtp-mail.outlook.com y gmail smtp.gmail.com
+    port: 587, // 587 otros puertos y 465 para gmail
+    secure: false, // true for 465, false for other ports
     auth: {
       user: email, // generated ethereal user
       pass: password, // generated ethereal password
@@ -52,7 +52,7 @@ app.post("/sendEmail", async (req, res) => {
   });
 
   await transporter.sendMail({
-    from: "\"AZUDIST\" <alex.tofis21@gmail.com>",
+    from: "\"AZUDIST\" <azudist@outlook.com>",
     to: para,
     subject: "FACTURA - Revisa tu Documento Electrónico de AZUDIST",
     text: `Estimado Cliente ${nombreCliente} adjunto sirvase encontrar el siguiente comprobante electronico Factura Electronica Nº ${numFactura}`,
