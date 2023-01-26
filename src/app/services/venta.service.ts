@@ -140,7 +140,7 @@ export class VentaService {
   // Guarda la venta final
   async saveVentaTerminada() {
       if (this.venta.productos.length) {
-         await this.interaccionService.presentLoading();
+         
           this.disminuirStock();
           this.venta.fecha = new Date();
           const path = `${Paths.ventas}${this.venta.cliente.ruc}/Facturas`;

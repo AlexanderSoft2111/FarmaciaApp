@@ -20,6 +20,13 @@ export class SriService {
     notaCredito: 4,
     notaDebito: 5,
   };
+
+  _claveAcceso: string = '';
+
+  get claveAcceso(): string{
+
+    return this._claveAcceso;
+  }
   
   private path = "";
 
@@ -48,7 +55,7 @@ export class SriService {
               codDoc: '01',
               estab: '001',
               ptoEmi: '100',
-              secuencial: secuencial,
+              secuencial: secuencial, //secuencial
               dirMatriz: 'Camino del tejar 4-30 camino a las pencas',
             },
             infoFactura: {
@@ -94,6 +101,8 @@ export class SriService {
           estructuraFactura[tipoComprobante].infoTributaria.claveAcceso =
           this.p_obtener_codigo_autorizacion_desde_comprobante(tipoComprobante, estructuraFactura);
 
+          this._claveAcceso = estructuraFactura[tipoComprobante].infoTributaria.claveAcceso;
+
         const x2js = new X2JS({ useDoubleQuotes: true });
         let xmlAsStr = '<?xml version="1.0" encoding="UTF-8"?>\n';
         xmlAsStr += x2js.js2xml(estructuraFactura);
@@ -136,7 +145,7 @@ export class SriService {
 
     if (typeof numero == "string" && /^\d+$/.test(numero)) {
       const digitos = numero.split("").map(Number); //arreglo con los dígitos del número
-      console.log('digitos',digitos);
+    
       digito_calculado =
         11 -
         (digitos.reduce(function (valorPrevio, valorActual, indice) {
@@ -204,14 +213,12 @@ export class SriService {
       this.pad(secuencial, 9) +
       this.pad(codigo, 8) +
       this.pad(tipoEmision, 1);     
-      console.log('codigo_autorizacion',codigo_autorizacion);
 
       //0901202301010289812900110011000000000500901050912 factura profe
       //150120230101036633570012001100000000042342390451  factura alex
       //150120230101028981290011001100000000050090105091  factura prueba
       //codigo_autorizacion = '150120230101036633570012001100000000045342390451';
       const digito_calculado = this.p_calcular_digito_modulo11(codigo_autorizacion);
-      console.log('digito calculado -> ', digito_calculado);
       if (digito_calculado > -1) {
         return codigo_autorizacion + digito_calculado;
       }

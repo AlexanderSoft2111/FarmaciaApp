@@ -5,9 +5,10 @@
     </ion-buttons>
     <ion-title><strong>Nueva venta</strong></ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="generarPDF()">
+      <!-- Boton de pruebas -->
+      <!-- <ion-button (click)="generarPDF()">
         <ion-icon slot="icon-only" name="star" color="dark"></ion-icon>
-      </ion-button>
+      </ion-button>  -->
       <ion-button (click)="saveVenta()">
         <ion-icon slot="icon-only" name="save" color="dark"></ion-icon>
       </ion-button>
@@ -168,27 +169,27 @@
           </ion-col>
         </ion-row>
       </ion-grid>
+    </div>
+  </ion-footer>
+  
+  
+  <div class="row barcode" id='contenido'>
+    <div class="col" >
+            <ngx-barcode   *ngFor="let bcValue of values"
+            [bc-element-type]="elementType"
+              [bc-value]='value'
+              [bc-format]="format"
+              [bc-line-color]="lineColor"
+              [bc-width]="width"
+              [bc-height]="height"
+              [bc-display-value]="displayValue"
+              [bc-font-options]="fontOptions"
+              [bc-font]="font"
+              [bc-text-align]="textAlign"
+              [bc-text-position]="textPosition"
+              [bc-text-margin]="textMargin"
+              [bc-font-size]="fontSize"
+              [bc-background]="background"
+            ></ngx-barcode>
+    </div>
   </div>
-</ion-footer>
-
-<div class="row barcode" id='contenido'>
-  <div class="col" >
-          <ngx-barcode   *ngFor="let bcValue of values"
-          [bc-element-type]="elementType"
-            [bc-value]='value'
-            [bc-format]="format"
-            [bc-line-color]="lineColor"
-            [bc-width]="width"
-            [bc-height]="height"
-            [bc-display-value]="displayValue"
-            [bc-font-options]="fontOptions"
-            [bc-font]="font"
-            [bc-text-align]="textAlign"
-            [bc-text-position]="textPosition"
-            [bc-text-margin]="textMargin"
-            [bc-font-size]="fontSize"
-            [bc-background]="background"
-          ></ngx-barcode>
-  </div>
-</div>
-

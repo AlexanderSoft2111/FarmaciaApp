@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { async, finalize, Observable, Subscription } from 'rxjs';
+import { finalize, Observable, Subscription } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import { PopoverController } from '@ionic/angular';
@@ -36,14 +36,15 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   venta: Venta;
   suscriberVenta: Subscription; 
+  suscriberEmail: Subscription; 
+  suscriberFile: Subscription; 
+  suscriberApiRecepcion: Subscription; 
+  suscriberApiAutorizacion: Subscription; 
   vuelto: number = 0;
   pago: number = 0;
   serie: string = '0';
   precioBonificacion: number = 0;
   precio_venta: number = 0;
-  estructuraFactura: any;
-  para: string = '';
-  clienteNombre: string = '';
 
   iva: boolean = false;
   detalle: string = '';
@@ -63,15 +64,15 @@ export class VentaComponent implements OnInit, OnDestroy {
     dirMatriz: 'Camino del tejar 4-30 camino a las pencas',
   }
 
-  claveAcceso: string = '';
   respuestaSri: string = '';
   autorizacion: string = '';
 
   elementType: "canvas" | "img" | "svg" = 'svg';
-  value = '123'//this.claveAcceso;
+  // TODO LA FACTURA 15 CON LA CLAVE DE ACCESO GENERAR PDF 1601202301010366335700120011000000000151601015414
+  value = '';
   format: "" | "CODE128" | "CODE128A" | "CODE128B" | "CODE128C" | "EAN" | "UPC" | "EAN8" | "EAN5" | "EAN2" | "CODE39" | "ITF14" | "MSI" | "MSI10" | "MSI11" | "MSI1010" | "MSI1110" | "pharmacode" | "codabar" = 'CODE128';
   lineColor = '#000000';
-  width = 70;
+  width = 5;
   height = 30;
   displayValue = false;
   fontOptions = '';
@@ -121,25 +122,93 @@ export class VentaComponent implements OnInit, OnDestroy {
     if (this.suscriberVenta) {
       this.suscriberVenta.unsubscribe();
     }
+    if (this.suscriberEmail) {
+      this.suscriberEmail.unsubscribe();
+    }
+    if (this.suscriberFile) {
+      this.suscriberFile.unsubscribe();
+    }
+    if (this.suscriberApiRecepcion) {
+      this.suscriberApiRecepcion.unsubscribe();
+    }
+    if (this.suscriberApiAutorizacion) {
+      this.suscriberApiAutorizacion.unsubscribe();
+    }
+  }
+
+  async facturar() {
+    const numFactura = this.serie + this.venta.numero;
+    console.log(numFactura);
+    const arrDetalle: DetVentaProducto[] = [];
+
+    this.venta.productos.forEach( producto => {
+      const productoDetalle: DetVentaProducto = {
+        codigoPrincipal: producto.producto.producto.codigo,
+        codigoAuxiliar: producto.producto.producto.codigo,
+        descripcion: producto.producto.producto.descripcion,
+        cantidad: producto.cantidad,
+        precioUnitario: Number(producto.producto.producto.precio_venta.toFixed(2)),
+        descuento: 0,
+        precioTotalSinImpuesto: Number(producto.precio.toFixed(2)),
+        impuestos: {
+          impuesto:  {
+            codigo: 2,
+            codigoPorcentaje: 0,
+            tarifa: 0,
+            baseImponible: Number(producto.precio.toFixed(2)),
+            valor: Number(producto.precio.toFixed(2)),
+          }
+        }
+      };
+
+      arrDetalle.push(productoDetalle);
+    });
+      arrDetalle.pop();
+    const estructuraFactura = await this.sriService.p_generar_factura_xml(numFactura, this.venta, arrDetalle);
+    if (estructuraFactura) {
+      this.value = this.sriService.claveAcceso;
+      const factBase64 = btoa(estructuraFactura);
+      
+      this.suscriberApiRecepcion = this.enviarFacturaSri(factBase64).subscribe( ({recibido, clave}) => {
+          if(recibido === 'RECIBIDA'){
+            setTimeout(() => {
+              this.suscriberApiAutorizacion = this.autorizarFacturaSri(clave).subscribe(async res => {
+                console.log('llame al servicio despues de 5 segundos', res);
+                if(res[0] === 'AUTORIZADO'){
+                  this.generarPDF();
+                }
+              });
+            }, 5000);
+          }
+
+      });
+    }
+
   }
 
   enviarFacturaSri(facBase64: string){
     const urlFirma = environment.firmaP12;
     const passFirma = environment.passFirma;
     const urlEnviarComp = environment.urlApiSriRecibirComprobante;
+
     return this.http.post<ComprobanteRecibidoSri>(urlEnviarComp,{
       xmlBase64: facBase64,
       firmaP12: urlFirma,
       passFirma: passFirma
     }).pipe(
       map( res => {
-        return res.data
+        console.log('respuesta SRI', res.data.sriResponse.respuestaRecepcionComprobante.estado[0]);
+        console.log('clave de acceso', res.data.claveAcceso);
+        return {
+          recibido: res.data.sriResponse.respuestaRecepcionComprobante.estado[0],
+          clave: res.data.claveAcceso 
+        }
       })
     );
   }
 
   autorizarFacturaSri(claveAcceso: string){
-
+    
     const urlAutorComp = environment.urlApiSriAutorizarComprobante;
     return this.http.post<autorizaComprobante>(urlAutorComp,{
       claveAcceso: claveAcceso,
@@ -153,15 +222,16 @@ export class VentaComponent implements OnInit, OnDestroy {
 
 
   generarPDF(){
+
     const htmlDiv = document.getElementById( 'contenido' );
-  
+
     domtoimage.toPng( htmlDiv ).then( async ( canvas ) => { 
       let imgData = new Image();
       imgData.src = canvas;
       this.codigoBarras = imgData;
       const doc = new jsPDF();
       const dataBody = [];
-      const numFactura = `${this.infoTributaria.ptoEmi}-${this.infoTributaria.estab}-${this.serie}${this.venta.numero}`;
+      const numFactura = `${this.infoTributaria.estab}-${this.infoTributaria.ptoEmi}-${this.serie}${this.venta.numero}`;
       this.venta.productos.forEach(producto => {
         if(producto.producto.producto.codigo !== ''){
           const data = [
@@ -190,7 +260,8 @@ export class VentaComponent implements OnInit, OnDestroy {
   
       //Contenedor de la informacion de direccion
       doc.rect(15,70,95,45);
-      doc.text(this.infoTributaria.nombreComercial, 20, 75);   
+      doc.text(this.infoTributaria.razonSocial, 20, 75);   
+      doc.text(this.infoTributaria.nombreComercial, 20, 82);   
 
       doc.setFontSize(10); 
       doc.text("Forma de Pago", 35, 274);   
@@ -207,14 +278,14 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.setFontSize(8); //RUC
       doc.setFont('times','normal',400);
       doc.text(this.infoTributaria.ruc, 150, 20);   
-      doc.text(numFactura, 150, 40);
-      doc.text(this.claveAcceso, 120, 53);   
+      doc.text(numFactura, 150, 40); //
+      doc.text(this.value, 120, 53);   
       doc.text("PRODUCCION", 150, 70); //AMBIENTE   
       doc.text("NORMAL", 150, 78); //EMISIÓN   
-      doc.text(this.infoTributaria.dirMatriz.toUpperCase(), 43, 82);    
-      doc.text(this.infoTributaria.dirMatriz.toUpperCase(), 43, 90);    
+      doc.text(this.infoTributaria.dirMatriz.toUpperCase(), 43, 92);    
+      doc.text(this.infoTributaria.dirMatriz.toUpperCase(), 43, 100);    
       doc.text('', 43, 97);  
-      doc.text('NO', 43, 110);   
+      doc.text('NO', 80, 113);   
       doc.text(this.venta.cliente.nombre.toUpperCase(), 70, 125);      
       doc.text(`${new Date().toLocaleDateString()}`, 70, 135);       
       doc.text(this.venta.cliente.ruc, 170, 125);
@@ -231,13 +302,10 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.text("AMBIENTE:", 118, 70); //AMBIENTE   
       doc.text("EMISIÓN:", 118, 78); //EMISIÓN   
       doc.text("CLAVE DE ACCESO:", 118, 86); //CLAVE DE ACCESO
-      doc.text("Dir Matriz:", 18, 82); 
-      doc.text("Dir Sucursal:", 18, 90); 
-      doc.text("Contribuyente", 18, 97); 
-      doc.text("Regimen RIMPE", 18, 100); 
-      doc.text("OBLIGADO A", 18, 107); 
-      doc.text("LLEVAR", 18, 110); 
-      doc.text("CONTABILIDAD:", 18, 113);
+      doc.text("Dir Matriz:", 18, 92); 
+      doc.text("Dir Sucursal:", 18, 100); 
+      doc.text("Contribuyente Regimen RIMPE", 18, 107); 
+      doc.text("OBLIGADO A LLEVAR CONTABILIDAD:", 18, 113);
       
       //Contenedor de la Razon social
       doc.rect(15,120,180,20);
@@ -286,7 +354,7 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.rect(15,270,60,6); doc.rect(75,270,20,6);
       doc.rect(15,276,60,5); doc.rect(75,276,20,5);
       doc.text('SIN UTILIZACIÓN DEL SISTEMA FINANCIERO', 18, 280);
-      doc.text(this.claveAcceso, 125, 110); //CLAVE DE ACCESO   
+      doc.text(this.value, 125, 110); //CLAVE DE ACCESO   
 
       autoTable(doc, {
         head: [this.headerTable],
@@ -298,6 +366,7 @@ export class VentaComponent implements OnInit, OnDestroy {
         bodyStyles: {fillColor: [255,255,255] ,lineColor: [0,0,0], textColor: 'black', lineWidth: 0.2, fontSize: 7, fontStyle: 'normal', font: 'times'},
         columnStyles: {'Descripción': {cellWidth: 120}}
       })
+
       
       //pdf-lib
       //Para fusionar un pdf existente con el que creó (ya sea usando jspdf, como arriba, o pdf-lib), 
@@ -320,7 +389,7 @@ export class VentaComponent implements OnInit, OnDestroy {
       //Obtiene el archivo pdf creado
       const file = new Blob([pdfBytes], { type: 'application/pdf' });
       const path = 'Facturas';
-      const nombreArchivo = `Factura_${numFactura}`;
+      const nombreArchivo = `Factura_${numFactura}.pdf`;
       //Obtiene la ruta del archivo 
       //const fileURL = URL.createObjectURL(file);
 
@@ -330,11 +399,14 @@ export class VentaComponent implements OnInit, OnDestroy {
       this.pdf = {
         name: nombreArchivo,
         docUrl: urlPdf,
-        para: this.para,
-        cliente: this.clienteNombre,
+        para: this.venta.cliente.email,
+        cliente: this.venta.cliente.nombre,
         numFactura
       }
-      
+      setTimeout(() => {
+        this.sendEmail(this.pdf);
+      }, 2000);
+
     }).catch( ( error ) => {
       console.error('Error: ', error);
     });
@@ -351,7 +423,7 @@ export class VentaComponent implements OnInit, OnDestroy {
       const task = ref.put(file);
       task.snapshotChanges().pipe(
         finalize( () => {
-          ref.getDownloadURL().subscribe( res => {
+          this.suscriberFile = ref.getDownloadURL().subscribe( res => {
             const downloadUrl = res;
             resolve(downloadUrl);
             return;
@@ -362,85 +434,19 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   }
 
-  sendEmail(pdf: any){
-    this.notificacionesService.sendEmail(pdf).subscribe((res) => {
+   sendEmail(pdf: any){
+    this.suscriberEmail = this.notificacionesService.sendEmail(pdf).subscribe(async(res) => {
       console.log(res);
-
-    });
-  }
-
-
-  async facturar() {
-    const numFactura = this.serie + this.venta.numero;
-
-    const arrDetalle: DetVentaProducto[] = [];
-
-    this.venta.productos.forEach( producto => {
-      const productoDetalle: DetVentaProducto = {
-        codigoPrincipal: producto.producto.producto.codigo,
-        codigoAuxiliar: producto.producto.producto.codigo,
-        descripcion: producto.producto.producto.descripcion,
-        cantidad: producto.cantidad,
-        precioUnitario: Number(producto.producto.producto.precio_venta.toFixed(2)),
-        descuento: 0,
-        precioTotalSinImpuesto: Number(producto.precio.toFixed(2)),
-        impuestos: {
-          impuesto:  {
-            codigo: 2,
-            codigoPorcentaje: 0,
-            tarifa: 0,
-            baseImponible: Number(producto.precio.toFixed(2)),
-            valor: Number(producto.precio.toFixed(2)),
-          }
-        }
-      };
-
-      arrDetalle.push(productoDetalle);
-    });
-      arrDetalle.pop();
-    const estructuraFactura = await this.sriService.p_generar_factura_xml(numFactura, this.venta, arrDetalle);
-    this.estructuraFactura = estructuraFactura;
-    const factBase64 = btoa(this.estructuraFactura);
-
-    if (estructuraFactura) {
-     /*  console.log('xml', estructuraFactura);
-      console.log('xml - base64', factBase64); */
-      this.enviarFacturaSri(factBase64).subscribe(async res => {
-        if(res){
-          console.log(res);
-          this.respuestaSri = res.sriResponse.respuestaRecepcionComprobante.estado[0];
-          this.claveAcceso = res.claveAcceso;
-/*           console.log('respuesta SRI', respuestaSri); */
-        }
-      });
-    }
-    this.generarPDF();
-
-    setTimeout(() => {
-      if(this.respuestaSri = 'RECIBIDA'){
-          this.autorizarFacturaSri(this.claveAcceso).subscribe(async (res) => {
-            if(res){
-              this.autorizacion = res[0];  
-              if(this.autorizacion = 'AUTORIZADO'){
-                      //Enviamos correo
-                this.sendEmail(this.pdf);
-                await this.ventaService.saveVentaTerminada();
-                console.log('Su comprobante se autorizo correctamente');
-              } else {
-                this.interaccionService.showToast('No se pudo autorizar su comprobante por favor hable con el administrador del sistema',500);
-              }
-            };
-          }); 
-      } else {
-        this.interaccionService.showToast('el SRI no acepto el comprobante por favor hable con el administrador del sistema',500);
+      if(res.ok){
+        await this.ventaService.saveVentaTerminada();
       }
-    }, 6000);
 
+    });
   }
 
   
   async saveVenta() {
-    if (!this.venta.total) {
+    if (this.venta.productos.length < 1) {
       this.interaccionService.showToast('No se ha registrado ningún producto');
       return;
     };
@@ -456,9 +462,7 @@ export class VentaComponent implements OnInit, OnDestroy {
             this.venta.detalle = this.detalle;
             
             if (this.pago >= this.venta.total) {
-              this.para = this.venta.cliente.email;
-              this.clienteNombre = this.venta.cliente.nombre;
-              await this.facturar();
+              await this.interaccionService.presentLoading();
               this.venta.productos.forEach(item => {
 
                 if(item.producto.producto.codigo !== ''){
@@ -476,6 +480,7 @@ export class VentaComponent implements OnInit, OnDestroy {
                   
                   const path = `${Paths.transacciones}${item.producto.producto.codigo}/Kardex`;
                   this.firestoreService.createDocument<TransaccionProducto>(transproducto, path);  
+                  this.facturar();
                 } else { return}
                 
               });
