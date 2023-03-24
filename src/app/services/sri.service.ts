@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { DatosUserAzudist, TipoComprobanteI, Cliente, Venta, DetVentaProducto } from '../models/models';
+import { DatosUserAzudist, TipoComprobanteI, Cliente, Venta, DetVentaProducto, DetNotaCreditoProducto } from '../models/models';
 import * as moment from 'moment';
 
 
@@ -95,17 +95,89 @@ export class SriService {
             },
           },
         };
-     
+        
+        const tipoInfo = 'infoFactura';
         const tipoComprobante: TipoComprobanteI = "factura"   
 
           estructuraFactura[tipoComprobante].infoTributaria.claveAcceso =
-          this.p_obtener_codigo_autorizacion_desde_comprobante(tipoComprobante, estructuraFactura);
+          this.p_obtener_codigo_autorizacion_desde_comprobante(tipoComprobante, tipoInfo ,estructuraFactura);
 
           this._claveAcceso = estructuraFactura[tipoComprobante].infoTributaria.claveAcceso;
 
         const x2js = new X2JS({ useDoubleQuotes: true });
         let xmlAsStr = '<?xml version="1.0" encoding="UTF-8"?>\n';
         xmlAsStr += x2js.js2xml(estructuraFactura);
+        resolve(xmlAsStr);
+        return;
+      
+    });
+  }
+  p_generar_nota_credito_xml(secuencial: string, venta: Venta, cliente: Cliente,arrDetalle: DetNotaCreditoProducto[], motivo: string, fechaEmi: any) {
+    
+    console.log('No se asigno nuevamente la cedula')
+    let tipoIdenComp = '';
+    (cliente.ruc.length === 10) ? tipoIdenComp = '05' : tipoIdenComp = '04';
+
+    return new Promise<any>( async (resolve, reject) => {
+        const estructuraNota = {
+          notaCredito: {
+            _id: "comprobante",
+            _version: "1.0.0",
+            infoTributaria: {
+              ambiente: '2',
+              tipoEmision: '1',
+              razonSocial: 'MORAN VIDAL JUAN PABLO',
+              nombreComercial: 'AZUDIST',
+              ruc: '0103663357001',
+              claveAcceso: '',
+              codDoc: '04',
+              estab: '001',
+              ptoEmi: '100',
+              secuencial: secuencial, //secuencial
+              dirMatriz: 'Camino del tejar 4-30 camino a las pencas',
+            },
+            infoNotaCredito: {
+              fechaEmision: moment().format('DD/MM/YYYY'),
+              dirEstablecimiento: 'Camino del tejar 4-30 camino a las pencas',
+              tipoIdentificacionComprador: tipoIdenComp,
+              razonSocialComprador: cliente.nombre,
+              identificacionComprador: cliente.ruc,
+              obligadoContabilidad: 'NO',
+              codDocModificado: '01',
+              numDocModificado: venta.numeroFactura,
+              fechaEmisionDocSustento: moment(fechaEmi).format('DD/MM/YYYY'),
+              totalSinImpuestos: venta.subtotal_sin_iva.toFixed(2),
+              valorModificacion: venta.total.toFixed(2),
+              moneda: 'DOLAR',
+              totalConImpuestos: {
+                totalImpuesto: [
+                  {
+                    codigo: 2,
+                    codigoPorcentaje: 0,
+                    baseImponible: Number(venta.subtotal_sin_iva.toFixed(2)),
+                    valor: Number(venta.subtotal_con_iva.toFixed(2)),
+                  },
+                ],
+              },
+              motivo: motivo,
+            },
+            detalles: {
+              detalle: arrDetalle
+            }
+          },
+        };
+        
+        const tipoInfo = 'infoNotaCredito';
+        const tipoComprobante: TipoComprobanteI = "notaCredito"   
+
+          estructuraNota[tipoComprobante].infoTributaria.claveAcceso =
+          this.p_obtener_codigo_autorizacion_desde_comprobante(tipoComprobante, tipoInfo,estructuraNota);
+
+          this._claveAcceso = estructuraNota[tipoComprobante].infoTributaria.claveAcceso;
+
+        const x2js = new X2JS({ useDoubleQuotes: true });
+        let xmlAsStr = '<?xml version="1.0" encoding="UTF-8"?>\n';
+        xmlAsStr += x2js.js2xml(estructuraNota);
         resolve(xmlAsStr);
         return;
       
@@ -169,17 +241,17 @@ export class SriService {
     }
   }
 
-  p_obtener_codigo_autorizacion_desde_comprobante(tipoComprobante: TipoComprobanteI, comprobante: any) {
+  p_obtener_codigo_autorizacion_desde_comprobante(tipoComprobante: TipoComprobanteI, tipoInfo: string,comprobante: any) {
     // const tipoComprobante: TipoComprobanteI = Object.keys(comprobante)[0];
     const codigoAutorizacion = this.p_obtener_codigo_autorizacion(
-      moment(comprobante[tipoComprobante].infoFactura.fechaEmision, "DD/MM/YYYY"), //fechaEmision
+      moment(comprobante[tipoComprobante][tipoInfo].fechaEmision, "DD/MM/YYYY"), //fechaEmision
       tipoComprobante, //tipoComprobante
       comprobante[tipoComprobante].infoTributaria.ruc, //ruc
       comprobante[tipoComprobante].infoTributaria.ambiente, //ambiente
       comprobante[tipoComprobante].infoTributaria.estab, //estab
       comprobante[tipoComprobante].infoTributaria.ptoEmi, //ptoEmi
       comprobante[tipoComprobante].infoTributaria.secuencial, //secuencial
-      comprobante[tipoComprobante].infoTributaria.tipoEmision //tipoEmision
+      comprobante[tipoComprobante].infoTributaria.tipoEmision, //tipoEmision
       //  null, //codigo
     );
 

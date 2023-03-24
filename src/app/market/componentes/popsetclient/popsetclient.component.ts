@@ -163,23 +163,25 @@ export class PopsetclientComponent implements OnInit {
     toast.present();
   }
 
-updateClient() {
-    const path = Paths.clientes;
-    const updateDoc = {
-      nombre: this.miFormulario.controls['nombre'].value,
-      ruc: this.miFormulario.controls['ruc'].value,
-      direccion: this.miFormulario.controls['direccion'].value,
-      telefono: this.miFormulario.controls['telefono'].value,
-      email: this.miFormulario.controls['email'].value,
-      codCliente: this.miFormulario.controls['codCliente'].value,
-    }
+  updateClient() {
 
-    this.firestoreService.updateDocumentID(updateDoc, path, this.cliente.id).then( () => {
-          this.interaccionService.showToast('Actualizado con éxito');
-    });
+        const path = Paths.clientes;
+      const updateDoc = {
+        nombre: this.miFormulario.controls['nombre'].value,
+        ruc: this.miFormulario.controls['ruc'].value,
+        direccion: this.miFormulario.controls['direccion'].value,
+        telefono: this.miFormulario.controls['telefono'].value,
+        email: this.miFormulario.controls['email'].value,
+        codCliente: this.miFormulario.controls['codCliente'].value,
+      }
 
-    this.popoverController.dismiss({
-      cliente: updateDoc,      
-    }); 
+
+      this.firestoreService.updateDocumentID(updateDoc, path, this.newcliente.id).then( () => {
+            this.interaccionService.showToast('Actualizado con éxito');
+      });
+
+      this.popoverController.dismiss({
+        cliente: updateDoc,      
+      }); 
   }
 }

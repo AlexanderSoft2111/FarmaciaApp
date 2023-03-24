@@ -83,7 +83,6 @@ export class ClientesComponent implements OnInit {
     });
      await popover.present();
      const { data } = await popover.onWillDismiss();
-     console.log(data);
   }
   
   applyFilter(event: Event) {
@@ -95,7 +94,6 @@ export class ClientesComponent implements OnInit {
   }
 
   copyCodigo(ev: any) {
-    console.log(ev);
     this.interaccionService.showToast('Código copiado: ' + ev);
     this.clipboard.copy(ev)
 
@@ -115,7 +113,6 @@ export class ClientesComponent implements OnInit {
     this.desubscribirnos = this.firestoreService.getCollection<Cliente>(Paths.clientes).subscribe( res => {
       if (res) {
         this.clientes = res;
-        console.log('consulte los clientes', this.clientes);
             this.dataSource = new MatTableDataSource(this.clientes);
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;

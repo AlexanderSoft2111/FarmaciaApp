@@ -1,0 +1,114 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-button></ion-menu-button>
+      </ion-buttons>
+      <ion-title><strong>Notas de Crédito</strong></ion-title>
+    </ion-toolbar>
+  </ion-header>
+  
+  <ion-content [fullscreen]="true">
+    
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large"><strong>Notas de Crédito</strong> </ion-title>
+      </ion-toolbar>
+    </ion-header>
+  
+    <div class="p-4">
+  
+      <button (click)="addNotaCredito()" class="btnCliente" style="background: none; border: none;">
+        <ion-item button class="none" lines="none" detail="false" class="button-next">
+            <ion-label class="normal font-weight-bold">
+                Crear Nota de crédito 
+            </ion-label>
+            <ion-buttons  slot="end">
+                <ion-button>
+                    <ion-icon slot="icon-only" name="add-circle-sharp"></ion-icon>
+                </ion-button>
+            </ion-buttons>
+        </ion-item>
+      </button>
+  
+          <ion-item>
+            <ion-icon slot="start" name="options"></ion-icon>
+            <ion-label position="stacked">Filtrar</ion-label>
+            <ion-input matInput (keyup)="applyFilter($event)" placeholder="Busqueda por nombre o ruc" #input></ion-input>       
+          </ion-item>
+  
+          <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource" matSort >
+        
+              <!-- editar -->
+              <ng-container matColumnDef="Acciones">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+                <td mat-cell *matCellDef="let row"> 
+                  <ion-buttons>
+                    <ion-button (click)="openModalDetallNC(row)">
+                      <ion-icon  name="reader"></ion-icon>
+                    </ion-button>
+                    <ion-button [href]="row.urlPDF" target="_blank">
+                      <ion-icon slot="icon-only" name="document-attach-outline" color="danger"></ion-icon>
+                    </ion-button>
+                  </ion-buttons>
+                </td>
+              </ng-container>
+              
+              <!-- fecha -->
+              <ng-container  matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha </th>
+                <td mat-cell *matCellDef="let row"> {{row.fecha | date:'short'}} </td>
+              </ng-container>
+          
+              <!-- Ruc -->
+              <ng-container  matColumnDef="ruc">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Ruc </th>
+                <td mat-cell *matCellDef="let row"> {{row.cliente.ruc}} </td>
+              </ng-container>
+              
+              <!-- Razon Social -->
+              <ng-container  matColumnDef="nombre">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Razon Social </th>
+                <td mat-cell *matCellDef="let row"> {{row.cliente.nombre}} </td>
+              </ng-container>
+              
+              <!-- Nota Credito -->
+              <ng-container  matColumnDef="numeroNotaCredito">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Nota de Cédito </th>
+                <td mat-cell *matCellDef="let row"> {{row.numeroNotaCredito}} </td>
+              </ng-container>
+              
+              <!-- Motivo -->
+              <ng-container  matColumnDef="motivo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Motivo </th>
+                <td mat-cell *matCellDef="let row"> {{row.motivo}} </td>
+              </ng-container>
+              
+              <!-- Motivo -->
+              <ng-container  matColumnDef="numeroFactura">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Factura </th>
+                <td mat-cell *matCellDef="let row"> {{row.numeroFactura}} </td>
+              </ng-container>
+              
+              <!-- Total -->
+              <ng-container  matColumnDef="total">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Total </th>
+                <td mat-cell *matCellDef="let row"> {{row.total.toFixed(2)}} </td>
+              </ng-container>
+
+          
+              <tr style="background: #e3edff;" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;" ></tr>
+          
+              <!-- Row shown when there is no matching data. -->
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">No existen datos por consultar"{{input.value}}"</td>
+              </tr>
+            </table>
+          
+            <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]"></mat-paginator>
+          </div>
+    </div>
+  
+  </ion-content>
+  

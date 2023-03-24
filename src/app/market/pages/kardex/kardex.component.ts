@@ -6,7 +6,7 @@ import { InteraccionService } from '../../../services/interaccion.service';
 import { IonInput, PopoverController } from '@ionic/angular';
 import { Subject} from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
-import { environment } from '../../../../environments/environment.prod';
+import { environment } from '../../../../environments/environment';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { FireAuthService } from '../../../services/fire-auth.service';

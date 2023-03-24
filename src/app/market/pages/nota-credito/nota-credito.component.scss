@@ -1,0 +1,63 @@
+.container-dias-pagar{
+    display: flex;
+    align-items: center;
+}
+
+.filaComprobante{
+    display: flex;
+    align-items: center;
+}
+
+.button-next {
+    --background: linear-gradient(90deg, #6dacff 0%, #1a73e8 100%);
+    max-width: 260px;
+    color: white !important;
+    margin: 10px;
+    border-radius: 8px;
+}
+
+table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px !important;
+    width: 100%;
+  }
+
+  
+  td, th {
+    width: auto;
+    max-width: 100px;
+    min-width: 50px;
+    text-align: center !important;
+    font-size: 11px;
+  }
+
+  th {
+    font-weight: bold;
+  }
+
+  .cantidad{
+    font-size: 11px;
+    width: 50%;
+    margin: auto;
+  }
+
+  .borderBtn{
+    --border-width: 1px
+  }
+  .iva-container{
+    display: flex;
+    align-items: center;
+  }
+
+  .checkboxIva{
+    margin: 0;
+    margin-right: 10px;
+}
+
+.barcode{
+  z-index: -1;
+  position: absolute;
+}

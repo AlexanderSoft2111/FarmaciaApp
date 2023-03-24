@@ -1,0 +1,318 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title><strong>Nota de Crédito</strong></ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="saveNotaCredito()">
+        <ion-icon slot="icon-only" name="save" color="dark"></ion-icon>
+      </ion-button>
+      <ion-button (click)="resetNotaCredito()">
+        <ion-icon  slot="icon-only" name="close-circle" color="danger"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-grid>
+    <ion-row class="ion-justify-content-between">
+          <ion-col class="mat-elevation-z8" size="12">
+            <ion-item>
+              <ion-label> <strong>Emisor:</strong> 
+              </ion-label>
+            </ion-item>
+            <ion-item lines="none" class="none">
+              <ion-label>
+                <ion-row>
+                  <ion-col size="3">
+                    <p> <strong>Ruc:</strong> {{infoTributaria.ruc}}</p>
+                  </ion-col>
+                  <ion-col size="4">
+                    <p> <strong>Nombre Comerial:</strong> {{infoTributaria.nombreComercial}}</p>
+                  </ion-col>
+                  <ion-col size="5">
+                    <p> <strong>Razón Social:</strong> {{infoTributaria.razonSocial}}</p>     
+                  </ion-col>
+                </ion-row>
+                <ion-row>
+                  <ion-col size="6">    
+                    <p> <strong>Contribuyente Especial:</strong> NO </p>
+                  </ion-col>
+                  <ion-col size="6">
+                    <p> <strong>Dirección Matriz:</strong> {{infoTributaria.dirMatriz}}</p>
+                  </ion-col>
+                </ion-row>
+              </ion-label>
+            </ion-item>
+        </ion-col>
+      
+    </ion-row>
+
+    <ion-row>
+      <ion-col class="mat-elevation-z8 mt-4" size="5.5">
+        <ion-item (click)="setCliente()">
+          <ion-label> <strong>Comprador:</strong> 
+          </ion-label>
+          <ion-icon color="primary" name="person-add"></ion-icon>
+        </ion-item>
+        <ion-item lines="none" class="none">
+          <ion-label>
+            <p> <strong>Ruc:</strong> {{cliente?.ruc}} </p>
+            <p> <strong>Razon Social:</strong> {{cliente?.nombre}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+      <ion-col size="1"></ion-col>
+      <ion-col class="mat-elevation-z8 mt-4" size="5.5">
+            <ion-item>
+              <ion-label> <strong>Comprobante:</strong></ion-label>
+            </ion-item>
+            <ion-item lines="none" class="none">
+              <ion-label>
+                <p> <strong>Número Comprobante:</strong> 001-100-{{serie}}{{numeroNota}}</p>
+                <p> <strong>Fecha Emisión:</strong> {{fecha | date:'medium'}}</p>
+              </ion-label>
+            </ion-item>
+      </ion-col>
+    </ion-row>
+    
+    <ion-row class="ion-justify-content-between">
+      <ion-col class="mat-elevation-z8 mt-4" size="12">
+        <ion-item>
+          <ion-label> <strong>Comprobante de Venta:</strong> 
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none" class="none">
+          <ion-label>
+            <ion-row class="filaComprobante">
+              <ion-col size="3">
+                <p> <strong>Tipo Documento:</strong> Factura</p>
+              </ion-col>
+              <ion-col size="4">
+                <p> <strong>Fecha Emisión:</strong> {{fechaEmi | date:'medium'}}</p>
+              </ion-col>
+              <ion-col size="5">
+                <p class="filaComprobante"> 
+                  <strong>Nº Comprobante:
+                  </strong>
+                    <ion-row>
+                      <ion-col size="3">
+                        <input type="text" 
+                               class="form-control form-control-sm"
+                               [(ngModel)]="estab"
+                               maxlength="3"
+                               placeholder="001">
+                      </ion-col>
+                      <ion-col size="3">
+                        <input type="text" 
+                               class="form-control form-control-sm"
+                               [(ngModel)]="ptoEmi"
+                               maxlength="3"
+                               placeholder="100">
+                      </ion-col>
+                      <ion-col size="6">
+                        <input type="text" 
+                               class="form-control form-control-sm"
+                               [(ngModel)]="serieFactura"
+                               maxlength="9"
+                               placeholder="000000001">
+                      </ion-col>
+                    </ion-row>
+                </p>     
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col size="12">    
+                <ion-item>
+                  <ion-label class="container-dias-pagar">
+                    <strong style="margin-right: 20px;">Motivo:
+                    </strong> 
+                    <input type="text" 
+                           class="form-control"
+                           [(ngModel)]="motivo">
+                  </ion-label>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-label>
+        </ion-item>
+    </ion-col>
+  
+    </ion-row>
+
+    <ion-row class="ion-justify-content-between">
+      <ion-col class="mat-elevation-z8 mt-4" size="12">
+        <ion-item>
+          <ion-label> <strong>Detalle de la Nota de Crédito:</strong> 
+          </ion-label>
+        </ion-item>
+
+        <button (click)="buscar(cliente?.ruc)" style="background: none; border: none;">
+          <ion-item button class="none" lines="none" detail="false" class="button-next">
+              <ion-label class="normal font-weight-bold" style="color: white !important;">
+                  Cargar Productos
+              </ion-label>
+              <ion-buttons slot="end">
+                  <ion-button>
+                      <ion-icon slot="icon-only" name="add-circle-sharp"></ion-icon>
+                  </ion-button>
+              </ion-buttons>
+          </ion-item>
+        </button>
+
+        <div class="p-4">
+    
+          <div class="mat-elevation-z8">
+    
+            <table mat-table [dataSource]="dataSource" matSort >
+        
+              <!-- editar -->
+              <ng-container matColumnDef="Acciones">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+                <td mat-cell *matCellDef="let row"> 
+                  <ion-button color="danger" 
+                              size="small" 
+                              fill="outline" 
+                              (click)="delete(row)"
+                              class="borderBtn">
+                              Eliminar
+                  </ion-button>
+                  
+                </td>
+              </ng-container>
+                     
+              <ng-container  matColumnDef="codigo">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+                <td mat-cell *matCellDef="let row"> {{row.producto.producto.codigo}} </td>
+              </ng-container>
+    
+              <!-- descripcion -->
+              <ng-container  matColumnDef="descripcion">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Descripción</th>
+                <td mat-cell *matCellDef="let row"> {{row.producto.descripcion}} </td>
+              </ng-container>
+    
+              <!-- lote -->
+              <ng-container  matColumnDef="lote">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Lote</th>
+                <td mat-cell *matCellDef="let row"> {{row.producto.producto.lote}} </td>
+              </ng-container>
+    
+              <!-- cantidad -->
+              <ng-container  matColumnDef="cantidad">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
+                <td mat-cell *matCellDef="let row">  
+                  <input type="number" 
+                  class="form-control form-control-sm text-center cantidad"
+                  [(ngModel)]="row.cantidad">
+                </td>
+              </ng-container>
+    
+              <!-- um -->
+              <ng-container  matColumnDef="um">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>UM</th>
+                <td mat-cell *matCellDef="let row"> {{row.producto.um}} </td>
+              </ng-container>
+              
+              <!-- precio_venta -->
+              <ng-container  matColumnDef="precio_unitario">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio Unitario</th>
+                <td mat-cell *matCellDef="let row"> {{row.producto.producto.precio_venta}}</td>
+              </ng-container>
+
+              <!-- precio_venta -->
+              <ng-container  matColumnDef="descuento">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Descuento</th>
+                <td mat-cell *matCellDef="let row"> {{row.descuento}}</td>
+              </ng-container>
+    
+              <!-- total -->
+              <ng-container  matColumnDef="total">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+                <td mat-cell *matCellDef="let row"> {{((row.cantidad * row.producto.producto.precio_venta) - row.descuento).toFixed(2)}}</td>
+              </ng-container>
+              
+              <!-- fecha_caducidad -->
+              <ng-container  matColumnDef="fecha_caducidad">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de caducidad</th>
+                <td mat-cell *matCellDef="let row"> {{row.producto.fecha_caducidad}} </td>
+              </ng-container>
+          
+              <tr style="background: #e3edff;" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            </table>
+          
+          </div>
+        </div>
+    </ion-col>
+  
+    </ion-row>
+
+    <ion-row class="ion-justify-content-between">
+      <ion-col class="mat-elevation-z8 mt-4" size="5.5">
+        <ion-item>
+          <ion-label> <strong>Datos adicionales:</strong> 
+          </ion-label>
+        </ion-item>
+        <ion-item lines="none" class="none">
+          <ion-label>
+            <p class="m-0"> <strong>Código:</strong> {{venta?.cliente.codCliente}}</p>
+            <p class="m-0"> <strong>Email:</strong> {{venta?.cliente.email}}</p>
+            <p class="m-0"> <strong>Dirección:</strong> {{venta?.cliente.direccion}}</p>
+            <p class="m-0"> <strong>Celular:</strong> {{venta?.cliente.telefono}}</p>
+          </ion-label>
+        </ion-item>
+      </ion-col>
+      <ion-col size="1"></ion-col>
+      <ion-col class="mat-elevation-z8 mt-4" size="5.5">
+          <ion-item>
+            <ion-label><strong>SubTotales:</strong></ion-label>
+            <ion-buttons slot="end">
+              <ion-chip color="dark" (click)="calcular()">
+                <ion-label>Calcular</ion-label>
+                <ion-icon name="refresh-circle"></ion-icon>
+              </ion-chip>
+            </ion-buttons>
+          </ion-item>
+          <ion-item lines="none" class="none">
+            <ion-label>
+              <p class="m-0"> <strong>Subtotal sin Impuestos:</strong> {{venta?.subtotal_sin_iva.toFixed(2)}}</p>
+              <p class="m-0"> <strong>Subtotal 12%:</strong> {{venta?.subtotal_con_iva.toFixed(2)}}</p>
+              <p class="m-0"> <strong>Subtotal 0%:</strong> {{venta?.subtotal_sin_iva.toFixed(2)}}</p>
+              <p class="m-0 iva-container"> 
+                <ion-checkbox [(ngModel)]="iva" (click)="calcularIva()" class="checkboxIva" slot="icon-only"></ion-checkbox> 
+                <strong>IVA 12%:</strong> {{venta?.iva.toFixed(2)}}
+              </p>
+              <p class="m-0"> <strong>Valor Total:</strong> {{venta?.total.toFixed(2)}}</p>
+            </ion-label>
+          </ion-item>
+        </ion-col>  
+      </ion-row>
+      
+    </ion-grid>
+  </ion-content>
+  
+  <div class="barcode" id='contenido'>
+    <div class="col" >
+            <ngx-barcode   *ngFor="let bcValue of values"
+            [bc-element-type]="elementType"
+              [bc-value]='value'
+              [bc-format]="format"
+              [bc-line-color]="lineColor"
+              [bc-width]="width"
+              [bc-height]="height"
+              [bc-display-value]="displayValue"
+              [bc-font-options]="fontOptions"
+              [bc-font]="font"
+              [bc-text-align]="textAlign"
+              [bc-text-position]="textPosition"
+              [bc-text-margin]="textMargin"
+              [bc-font-size]="fontSize"
+              [bc-background]="background"
+            ></ngx-barcode>
+    </div>
+  </div>

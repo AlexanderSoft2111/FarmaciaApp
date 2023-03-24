@@ -1,0 +1,36 @@
+table {
+    width: 100%;
+  }
+  
+  .mat-form-field {
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  td, th {
+    width: auto;
+    max-width: 100px;
+    min-width: 50px;
+    text-align: center !important;
+    font-size: 11px;
+  }
+
+  th {
+    font-weight: bold;
+  }
+
+  .button-next {
+    
+    --background: linear-gradient( 90deg , #f83640 0%, #520a20 100%);
+    max-width: 250px;
+    margin-bottom: 20px;
+    color: white !important;
+    margin-left: auto;
+    border-radius: 8px; 
+    
+}
+
+.btnCliente{
+    padding: 0;
+}
+  

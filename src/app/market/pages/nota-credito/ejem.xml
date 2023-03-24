@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<notaCredito id="comprobante" version="1.1.0">
+    <infoTributaria>
+        <ambiente>1</ambiente>
+        <tipoEmision>1</tipoEmision>
+        <razonSocial> EMPRESA PUBLICA DE HIDROCARBUROS DEL ECUADOR EP PETROECUADOR </razonSocial>
+        <nombreComercial>EMPRESA PUBLICA DE HIDROCARBUROS DEL ECUADOR EP PETROECUADOR</nombreComercialx>
+        <ruc>1760013210001</ruc>
+        <claveAcceso>0603201304176001321000110015010000000461234567817</claveAcceso>
+        <codDoc>04</codDoc>
+        <estab>001</estab>
+        <ptoEmi>501</ptoEmi>
+        <secuencial>000000046</secuencial>
+        <dirMatriz>ALPALLANA</dirMatriz>
+    </infoTributaria>
+    <infoNotaCredito>
+        <fechaEmision>06/03/2013</fechaEmision>
+        <dirEstablecimiento>ALPALLANA</dirEstablecimiento>
+        <tipoIdentificacionComprador>04</tipoIdentificacionComprador>
+        <razonSocialComprador>PRUEBAS SERVICIO DE RENTAS INTERNAS</razonSocialComprador>
+        <identificacionComprador>1792107865001</identificacionComprador>
+        <contribuyenteEspecial>5368</contribuyenteEspecial>
+        <obligadoContabilidad>SI</ obligadoContabilidad>
+        <rise>Contribuyente Régimen Simplificado RISE</rise>
+        <codDocModificado>01</codDocModificado>
+        <numDocModificado>002-001-000000001</numDocModificado>
+        <fechaEmisionDocSustento>03/03/2013</fechaEmisionDocSustento>
+        <totalSinImpuestos>38327.96</totalSinImpuestos>
+        <valorModificacion>45073.68</valorModificacion>
+        <moneda>DOLAR</moneda>
+        <totalConImpuestos>
+            <totalImpuesto>
+                <codigo>3</codigo>
+                <codigoPorcentaje>3072</ codigoPorcentaje>
+                <baseImponible>38327.96</baseImponible>
+                <valor>1916.40</valor>
+            </totalImpuesto>
+            <totalImpuesto>
+                <codigo>2</codigo>
+                <codigoPorcentaje>2</ codigoPorcentaje>
+                <baseImponible>40244.36</baseImponible>
+                <valor>4829.32</valor>
+            </totalImpuesto >
+        </totalConImpuestos >
+        <motivo>DEVOLUCIÓN</motivo>
+    </infoNotaCredito>
+    <detalles>
+        <detalle>
+            <codigoInterno>125BJC-01</codigoInterno >
+            <codigoAdicional>1234D56789-A</codigoAdicional>
+            <descripcion> ABCD</descripcion>
+            <cantidad>1500.564125</cantidad>
+            <precioUnitario>25.542365</precioUnitario>
+            <descuento>0.00</descuento>
+            <precioTotalSinImpuesto>38327.96</ precioTotalSinImpuesto>
+            <detallesAdicionales>
+                <detAdicional nombre="Marca" valor="Chevrolet"/>
+                <detAdicional nombre="Modelo" valor="2012"/>
+                <detAdicional nombre="Chasis" valor="8LDETA03V20003289"/>
+            </detallesAdicionales>
+            <impuestos>
+                <impuesto>
+                    <codigo>3</codigo>
+                    <codigoPorcentaje>3072</codigoPorcentaje>
+                    <tarifa>5</ tarifa>
+                    <baseImponible>38327.96</baseImponible>
+                    <valor>1916.40</valor>
+                </impuesto>
+                <impuesto>
+                    <codigo>2</codigo>
+                    <codigoPorcentaje>2</codigoPorcentaje>
+                    <tarifa>12</ tarifa>
+                    <baseImponible>40244.36</baseImponible>
+                    <valor>4829.32</valor>
+                </impuesto>
+            </impuestos>
+            <detalle>
+                <detalles>
+                    <infoAdicional>
+                        <campoAdicional nombre="E-MAIL">info@organizacion.com</campoAdicional>
+                    </infoAdicional>
+                </notaCredito>

@@ -4,17 +4,20 @@ export const Paths = {
    ventas: 'Ventas/',
    numeroVenta: 'Numeroventa/numeroventa',
    transacciones: 'Transacciones/',
-   inventario: 'Inventario/'
+   inventario: 'Inventario/',
+   notasCredito: 'NotasCredito/',
+   numeroNotaCredito: 'NotaCredito/numeroNotaCredito'
 } 
 
 export interface TransaccionProducto {
    numero_factura: string;
+   numero_nota_credito?: string;
    proveedor: string;
    ruc: string
    cantidad: number;
    um: string;
    producto: Producto;
-   fecha_transaccion: string;
+   fecha_transaccion: Date;
    tipo_transaccion: string
 }
 
@@ -23,7 +26,9 @@ export interface InvProducto {
     um: string;
     producto: Producto;
     descripcion: string;
-    fecha_ingreso: Date
+    fecha_ingreso: Date;
+    //cantidad_minima?: number;
+    diferencia?: number;
  }
 export interface Producto {
     codigo: string;
@@ -65,7 +70,26 @@ export interface Producto {
      fecha: Date;
      id: string;
      numero: number;
+     numeroFactura?: string;
      detalle?: string
+     vendedor?: string;
+     formaPago?: string;
+     urlPDF: string
+ }
+
+ export interface NotaCredito {
+     productos: ProductoVenta[];
+     cliente: Cliente;
+     subtotal_sin_iva: number;
+     subtotal_con_iva: number;
+     iva: number;
+     total: number;
+     fecha: Date;
+     id: string;
+     numeroNotaCredito: string;
+     numeroFactura: string;
+     motivo: string;
+     urlPDF: string
  }
 
  export interface ProductoVenta {
@@ -77,6 +101,9 @@ export interface Producto {
  }
 
  export interface NumeroVenta {
+     numero: number;
+ }
+ export interface NumeroNota {
      numero: number;
  }
 
@@ -108,6 +135,16 @@ export interface Producto {
 export interface DetVentaProducto {
     codigoPrincipal: string;
     codigoAuxiliar: string;
+    descripcion: string;
+    cantidad: number;
+    precioUnitario: number;
+    descuento: number;
+    precioTotalSinImpuesto: number;
+    impuestos: VentaPorductoImpuestos
+}
+export interface DetNotaCreditoProducto {
+    codigoInterno: string;
+    codigoAdicional: string;
     descripcion: string;
     cantidad: number;
     precioUnitario: number;

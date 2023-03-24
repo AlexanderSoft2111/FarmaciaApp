@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { FireAuthService } from './services/fire-auth.service';
-import { environment } from '../environments/environment.prod';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -58,8 +58,9 @@ export class AppComponent {
         { title: 'Clientes', url: '/market/clientes', icon: 'people' },
         { title: 'Inventario', url: '/market/inventario', icon: 'server' },
         { title: 'Kardex', url: '/market/kardex', icon: 'trending-up' },
-  
-        
+        { title: 'Notas crédito', url: '/market/notas-credito', icon: 'document-text' },
+        { title: 'Facturas', url: '/market/facturas', icon: 'cash' }
+
       ];
     }
     this.appPages = paginas;

@@ -2,6 +2,7 @@ import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as express from "express";
 import * as cors from "cors";
+import {autorizacionComprobanteAPI, validarComprobanteXmlAPI} from "./apis/fakcil";
 
 /* tslint:disable no-var-requires */
 const nodemailer = require("nodemailer");
@@ -23,19 +24,18 @@ admin.initializeApp({
 });
 
 
-
-
 app.post("/sendEmail", async (req, res) => {
   const name = req.body.name;
   const docUrl = req.body.docUrl;
   const para = req.body.para;
   const nombreCliente = req.body.cliente;
-  const numFactura = req.body.numFactura;
+  const numDocumento = req.body.numDocumento;
+  const tipoDocumento = req.body.tipoDocumento;
   const email = req.headers.email;
   const password = req.headers.password;
 
   const transporter = nodemailer.createTransport({
-    host: "smtp-mail.outlook.com", // para outlook smtp-mail.outlook.com y gmail smtp.gmail.com
+    host: 'smtp-mail.outlook.com', // para outlook smtp-mail.outlook.com y gmail smtp.gmail.com
     port: 587, // 587 otros puertos y 465 para gmail
     secure: false, // true for 465, false for other ports
     auth: {
@@ -51,8 +51,8 @@ app.post("/sendEmail", async (req, res) => {
   await transporter.sendMail({
     from: "\"AZUDIST\" <azudist@outlook.com>",
     to: para,
-    subject: "FACTURA - Revisa tu Documento Electrónico de AZUDIST",
-    text: `Estimado Cliente ${nombreCliente} adjunto sirvase encontrar el siguiente comprobante electronico Factura Electronica Nº ${numFactura}`,
+    subject: `${tipoDocumento} - Revisa tu Documento Electrónico de AZUDIST`,
+    text: `Estimado Cliente ${nombreCliente} adjunto sirvase encontrar el siguiente comprobante electrónico ${tipoDocumento} Nº ${numDocumento}`,
     attachments: {
       filename: name + ".pdf",
       path: docUrl,
@@ -63,6 +63,10 @@ app.post("/sendEmail", async (req, res) => {
     ok: true,
   });
 });
+
+app.post("/validarComprobanteXmlAPI", validarComprobanteXmlAPI);
+
+app.post("/autorizacionComprobanteAPI", autorizacionComprobanteAPI);
 
 export const api = functions.https.onRequest( app );
 

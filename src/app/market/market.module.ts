@@ -9,6 +9,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {ClipboardModule} from '@angular/cdk/clipboard';
 import { IonicModule } from '@ionic/angular';
+import { MatTableExporterModule } from 'mat-table-exporter';
 
 import { AddinventarioComponent } from './pages/addinventario/addinventario.component';
 import { ClientesComponent } from './pages/clientes/clientes.component';
@@ -22,6 +23,11 @@ import { KardexComponent } from './pages/kardex/kardex.component';
 import { ModalDetalleComponent } from './componentes/modal-detalle/modal-detalle.component';
 
 import { NgxBarcodeModule } from 'ngx-barcode';
+import { NotasCreditoComponent } from './pages/notas-credito/notas-credito.component';
+import { NotaCreditoComponent } from './pages/nota-credito/nota-credito.component';
+import { FacturasComponent } from './pages/facturas/facturas.component';
+import { DetalleFacturaComponent } from './componentes/detalle-factura/detalle-factura.component';
+import { DetalleNotaCreditoComponent } from './componentes/detalle-nota-credito/detalle-nota-credito.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +39,12 @@ import { NgxBarcodeModule } from 'ngx-barcode';
     LoginComponent,
     KardexComponent,
     ModalDetalleComponent,
-    ClientesComponent
+    ClientesComponent,
+    NotasCreditoComponent,
+    NotaCreditoComponent,
+    FacturasComponent,
+    DetalleFacturaComponent,
+    DetalleNotaCreditoComponent
   ],
   imports: [
     CommonModule,
@@ -48,7 +59,8 @@ import { NgxBarcodeModule } from 'ngx-barcode';
     MatTableModule,
     MatPaginatorModule,
     ClipboardModule,
-    NgxBarcodeModule
+    NgxBarcodeModule,
+    MatTableExporterModule
   ]
 })
 export class MarketModule { }

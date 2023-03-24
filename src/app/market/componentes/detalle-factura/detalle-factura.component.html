@@ -1,0 +1,106 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title><strong>Detalle de la Factura Nº: {{venta.numeroFactura}}</strong></ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()">
+        <ion-icon slot="icon-only" name="close" color="dark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-row >
+  <ion-col >
+    <ion-item lines="none" class="none">
+      <ion-label>
+        <p class="color-detalle"> <strong class="color-label">Código Cliente:</strong> {{venta.cliente.codCliente}}</p>
+        <p class="color-detalle"> <strong class="color-label">Cliente:</strong> {{venta.cliente.nombre}}</p>
+        <p class="color-detalle"> <strong class="color-label">Ruc:</strong> {{venta.cliente.ruc}}</p>
+        <p class="color-detalle"> <strong class="color-label">Email::</strong> {{venta.cliente.email}}</p>     
+        <p class="color-detalle"> <strong class="color-label">Teléfono:</strong> {{venta.cliente.telefono}}</p>
+        <p class="color-detalle"> <strong class="color-label">Dirección:</strong> {{venta.cliente.direccion}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-col>
+  
+  <ion-col >
+    <ion-item lines="none" class="none">
+      <ion-label>
+        <p class="color-detalle"> <strong class="color-label">Fecha Creación:</strong> {{venta.fecha | date:'short'}}</p>
+        <p class="color-detalle"> <strong class="color-label">N° Factura:</strong> {{venta.numeroFactura}}</p>
+         <p class="color-detalle"> <strong class="color-label">Subtotal sin Iva:</strong> {{venta.subtotal_sin_iva}}</p>
+        <p class="color-detalle"> <strong class="color-label">Subtotal con Iva::</strong> {{venta.subtotal_con_iva}} </p> 
+        <p class="color-detalle"> <strong class="color-label">IVA:</strong> {{venta.iva}}</p>
+        <p class="color-detalle"> <strong class="color-label">Total:</strong> {{venta.total}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-col>
+</ion-row>
+
+<ion-row>
+  <ion-col>
+    <table mat-table [dataSource]="dataSource" matSort >
+                 
+      <!-- codigo -->
+      <ng-container  matColumnDef="codigo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Código</th>
+        <td mat-cell *matCellDef="let row"> {{row.producto.producto.codigo}} </td>
+      </ng-container>
+
+      <!-- descripcion -->
+      <ng-container  matColumnDef="descripcion">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Descripción</th>
+        <td mat-cell *matCellDef="let row"> {{row.producto.descripcion}} </td>
+      </ng-container>
+
+      <!-- lote -->
+      <ng-container  matColumnDef="lote">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Lote</th>
+        <td mat-cell *matCellDef="let row"> {{row.producto.producto.lote}} </td>
+      </ng-container>
+
+      <!-- cantidad -->
+      <ng-container  matColumnDef="cantidad">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Cantidad</th>
+        <td mat-cell *matCellDef="let row"> {{row.cantidad}}
+        </td>
+      </ng-container>
+
+      <!-- um -->
+      <ng-container  matColumnDef="um">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>UM</th>
+        <td mat-cell *matCellDef="let row"> {{row.producto.um}} </td>
+      </ng-container>
+      
+      <!-- precio_venta -->
+      <ng-container  matColumnDef="precio_unitario">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Precio Unitario</th>
+        <td mat-cell *matCellDef="let row"> {{row.producto.producto.precio_venta}}</td>
+      </ng-container>
+
+      <!-- precio_venta -->
+      <ng-container  matColumnDef="descuento">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Descuento</th>
+        <td mat-cell *matCellDef="let row"> {{row.descuento}}</td>
+      </ng-container>
+
+      <!-- total -->
+      <ng-container  matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
+        <td mat-cell *matCellDef="let row"> {{(row.cantidad * row.precio).toFixed(2)}}</td>
+      </ng-container>
+      
+      <!-- fecha_caducidad -->
+      <ng-container  matColumnDef="fecha_caducidad">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha de caducidad</th>
+        <td mat-cell *matCellDef="let row"> {{row.producto.fecha_caducidad}} </td>
+      </ng-container>
+  
+      <tr style="background: #e3edff;" mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+    </table>
+  </ion-col>
+</ion-row>
+
+

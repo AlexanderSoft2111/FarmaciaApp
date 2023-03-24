@@ -1,0 +1,86 @@
+/* table {
+    overflow-x: scroll;
+  }
+   */
+  .mat-form-field {
+    font-size: 14px;
+    width: 100%;
+  }
+  
+  td, th {
+    width: auto;
+    min-width: 50px;
+    text-align: center !important;
+    font-size: 11px;
+  }
+
+  th {
+    font-weight: bold;
+  } 
+
+  .button-next {
+    
+    --background: linear-gradient( 90deg , #f83640 0%, #520a20 100%);
+    max-width: 250px;
+    margin-bottom: 20px;
+    color: white !important;
+    margin-left: auto;
+    border-radius: 8px; 
+    
+}
+
+.btnCliente{
+    padding: 0;
+}
+
+.table-responsive {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  .mat-table {
+      width: 100%;
+      max-width: 100%;
+      margin-bottom: 1rem;
+      display: table;
+      border-collapse: collapse;
+      margin: 0px;
+  }
+  .mat-row,
+  .mat-header-row {
+      display: table-row;
+  }
+  .mat-cell,
+  .mat-header-cell {
+      word-wrap: initial;
+      display: table-cell;
+      padding: 0px 5px;
+      line-break: unset;
+      width: auto;
+      white-space: nowrap;
+      overflow: hidden;
+      vertical-align: middle;
+  }
+}
+
+label {
+  padding: 3px;
+  border-radius: 10px;
+  width: 100px;
+  color: white;
+}
+
+.tarjeta{
+  background-color: #efb805;
+}
+
+.efectivo{
+  background-color: #2abf0b;
+}
+
+.transferencia{
+  background-color: #0593ef;
+}
+
+.otros{
+  background-color: brown;
+}

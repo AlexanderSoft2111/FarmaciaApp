@@ -1,8 +1,8 @@
 import { Injectable} from '@angular/core';
-import { NumeroVenta, Venta, Paths, ProductoVenta } from '../models/models';
+import { NumeroVenta, Venta, Paths, ProductoVenta, NotaCredito, InvProducto, TransaccionProducto, NumeroNota } from '../models/models';
 import { LocalstorageService } from './localstorage.service';
 import { FirestoreService } from './firestore.service';
-import { Subject } from 'rxjs';
+import { finalize, map, Subject } from 'rxjs';
 import { InteraccionService } from './interaccion.service';
 
 
@@ -35,7 +35,8 @@ export class VentaService {
     total: 0,
     fecha: new Date(),
     id: this.firestoreService.createIdDoc(),
-    numero: 1
+    numero: 1,
+    urlPDF: ''
   }
 
 
@@ -81,24 +82,20 @@ export class VentaService {
         total: 0,
         fecha: new Date(),
         id: this.firestoreService.createIdDoc(),
-        numero: null
+        numero: null,
+        urlPDF: ''
       }
       this.venta.numero = (await this.getNumerVenta()).numero
       this.venta$.next(this.venta);
   }
 
   getVenta() {
-      return this.venta
+      return this.venta;
   }
 
   getVentaChanges() {
     this.venta$.next(this.venta);
     return this.venta$.asObservable();
-  }
-
-  getVentasChanges() {
-    this.ventas$.next(this.ventas);
-    return this.ventas$.asObservable();
   }
 
   getNumerVenta(): Promise<NumeroVenta> {
@@ -120,6 +117,7 @@ export class VentaService {
 
   }
 
+
   setNumberVenta() {
       const path = 'Numeroventa/';
       const id = 'numeroventa';
@@ -131,6 +129,8 @@ export class VentaService {
         console.log('error -> setNumberVenta() ', error);
       })
   }
+  
+
 
   resetVenta() {
      this.initVenta();
@@ -138,23 +138,115 @@ export class VentaService {
   }
 
   // Guarda la venta final
-  async saveVentaTerminada() {
+  async saveVentaTerminada(numFactura: string) {
       if (this.venta.productos.length) {
-         
+        this.venta.fecha = new Date();
+        this.venta.numeroFactura = numFactura;
+        const path = Paths.ventas;
+        
+        this.firestoreService.createDocumentID<Venta>(this.venta, path,this.venta.id).then( res => {
+          this.venta.productos.forEach(async item => {
+
+          const transproducto: TransaccionProducto = {
+            numero_factura: numFactura,
+            proveedor: this.venta.cliente.nombre,
+            ruc: this.venta.cliente.ruc,
+            cantidad: item.cantidad,
+            um: item.producto.um,
+            producto: item.producto.producto,
+            fecha_transaccion: new Date(),
+            tipo_transaccion: 'Egreso de stock'
+
+          };
+          const path = `${Paths.transacciones}${item.producto.producto.codigo}/Kardex`;
+          await this.firestoreService.createDocument<TransaccionProducto>(transproducto, path);  
+        });
+          this.setNumberVenta();
           this.disminuirStock();
-          this.venta.fecha = new Date();
-          const path = `${Paths.ventas}${this.venta.cliente.ruc}/Facturas`;
-          
-          this.firestoreService.createDocumentID<Venta>(this.venta, path,this.venta.id).then( res => {
-            this.interaccionService.showToast('Venta guardada con éxito');
-            this.setNumberVenta();
-            this.resetVenta();
-            this.interaccionService.dismissLoading();
+          this.interaccionService.showToast('Venta guardada con éxito');
+          this.resetVenta();
+          this.interaccionService.dismissLoading();
           }).catch( err => {
             console.log('error localstorageService.setDoc -> ', err);
-          })
+          }) 
         }
 
+  }
+  async saveNotaCreditoTerminada(notaCredito: NotaCredito) {
+      if (notaCredito.productos.length) {
+        const path = Paths.notasCredito;
+        
+        this.firestoreService.createDocumentID<NotaCredito>(notaCredito, path,notaCredito.id).then( res => {
+            notaCredito.productos.forEach(item => {
+            const transproducto: TransaccionProducto = {
+              numero_factura: notaCredito.numeroFactura,
+              numero_nota_credito: notaCredito.numeroNotaCredito,
+              proveedor: notaCredito.cliente.nombre,
+              ruc: notaCredito.cliente.ruc,
+              cantidad: item.cantidad,
+              um: item.producto.um,
+              producto: item.producto.producto,
+              fecha_transaccion: new Date(),
+              tipo_transaccion: 'Ingreso de stock'
+            };
+            
+            const path = `${Paths.transacciones}${item.producto.producto.codigo}/Kardex`;
+            this.firestoreService.createDocument<TransaccionProducto>(transproducto, path).then(res => {
+            });
+            
+          });
+          this.devolverInventario(notaCredito.productos);
+          this.interaccionService.dismissLoading();
+          this.interaccionService.showToast('Nota de credito guardada con éxito');
+            
+          }).catch( err => {
+            console.log('error localstorageService.setDoc -> ', err);
+          }) 
+        }
+
+  }
+
+  devolverInventario(productos: ProductoVenta[]){
+    const path = Paths.inventario;
+
+    //Se encuentra los items repetidos para sumarlos y devolverlos en un nuevo arreglo
+    const miCarritoSinDuplicados = productos.reduce((acumulador:ProductoVenta[], valorActual) => {
+
+      const elementoYaExiste = acumulador.find(elemento => elemento.producto.producto.codigo === valorActual.producto.producto.codigo);
+      if (elementoYaExiste) {
+        return acumulador.map((elemento) => {
+          if (elemento.producto.producto.codigo === valorActual.producto.producto.codigo) {
+            return {
+              ...elemento,
+              cantidad: elemento.cantidad + valorActual.cantidad
+            }
+          }
+    
+          return elemento;
+        });
+      }
+      return [...acumulador,valorActual];
+    }, []);
+
+    productos = miCarritoSinDuplicados;
+    
+    productos.forEach( async item => {
+
+    //Obtenemos la fotografia del documento para extraer la data  
+    const docSnap = await this.firestoreService.getDocument<InvProducto>(`${path}${item.producto.producto.codigo}`);
+
+    //Obtener la data del documento
+    const productoResultado = docSnap.data();
+
+    item.producto.cantidad = productoResultado.cantidad;
+
+    const updateDoc = {
+      cantidad: item.producto.cantidad + item.cantidad
+    };
+
+    await this.firestoreService.updateDocumentID(updateDoc, path, item.producto.producto.codigo);
+
+    });
   }
 
   async getVentas() {
@@ -171,7 +263,6 @@ export class VentaService {
 
   disminuirStock() {
 
-         
       //Se encuentra los items repetidos para sumarlos y devolverlos en un nuevo arreglo
       const miCarritoSinDuplicados = this.venta.productos.reduce((acumulador:ProductoVenta[], valorActual) => {
 

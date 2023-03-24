@@ -8,7 +8,7 @@ import { IonInput } from '@ionic/angular';
 import { Subject} from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 import { FireAuthService } from '../../../services/fire-auth.service';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 
 
 
@@ -139,7 +139,8 @@ export class AddinventarioComponent implements OnInit{
               descripcion: newArticulo.descripcion,
               fecha_ingreso: new Date()
             }
-  
+          
+
             const path = Paths.productos;
             this.firestoreService.createDocumentID<Producto>(newArticulo, path, newArticulo.codigo).then( () => {
                   this.interaccionService.showToast('Guardado con éxito');

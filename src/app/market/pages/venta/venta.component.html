@@ -5,10 +5,6 @@
     </ion-buttons>
     <ion-title><strong>Nueva venta</strong></ion-title>
     <ion-buttons slot="end">
-      <!-- Boton de pruebas -->
-      <!-- <ion-button (click)="generarPDF()">
-        <ion-icon slot="icon-only" name="star" color="dark"></ion-icon>
-      </ion-button>  -->
       <ion-button (click)="saveVenta()">
         <ion-icon slot="icon-only" name="save" color="dark"></ion-icon>
       </ion-button>
@@ -49,6 +45,13 @@
             <ion-label>
               <p> <strong>Fecha:</strong> {{venta.fecha | date:'medium'}}</p>
               <p> <strong>Número:</strong> {{serie}}{{venta.numero}}</p>
+              <div class="input-group input-group-sm">
+                <input type="text" 
+                       class="form-control" 
+                       placeholder="Vendedor" 
+                       [(ngModel)]="venta.vendedor"
+                       >
+              </div>
             </ion-label>
           </ion-item>
           <div class="content-total">
@@ -131,8 +134,12 @@
           <ion-col>
             <ion-item>
               <ion-label class="container-dias-pagar">
-                <strong style="margin-right: 20px;">Detalle:
+                <strong style="margin-right: 20px;">Forma de Pago:
                 </strong> 
+                <select [(ngModel)]="pagoSeleccionado" (change)="metodoPago($event)" class="form-select" aria-label="Default select example" style="margin-right: 30px;">
+                  <option selected value="0">Escoger opción</option>
+                  <option *ngFor="let pago of formasPago" [value]="pago">{{ pago }}</option>
+                </select>
                 <input type="text" 
                        class="form-control"
                        [(ngModel)]="detalle">
@@ -173,8 +180,8 @@
   </ion-footer>
   
   
-  <div class="row barcode" id='contenido'>
-    <div class="col" >
+  <div class="row" id='contenido'>
+    <div class="col barcode">
             <ngx-barcode   *ngFor="let bcValue of values"
             [bc-element-type]="elementType"
               [bc-value]='value'

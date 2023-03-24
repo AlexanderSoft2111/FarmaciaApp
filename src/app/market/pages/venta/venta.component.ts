@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { finalize, Observable, Subscription } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { finalize, Observable, Subscription, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { PopoverController } from '@ionic/angular';
 
@@ -21,10 +21,10 @@ import { AngularFireStorage } from '@angular/fire/compat/storage';
 
 import domtoimage from 'dom-to-image';
 import { NotificacionesService } from '../../../services/notificaciones.service';
-import { environment } from '../../../../environments/environment';
 import { ComprobanteRecibidoSri } from 'src/app/models/sriResponse';
-import { map } from 'rxjs/operators';
+import { catchError, map, retry } from 'rxjs/operators';
 import { autorizaComprobante } from 'src/app/models/sriAutoriza';
+import { environment } from '../../../../environments/environment';
 
 
 @Component({
@@ -47,29 +47,22 @@ export class VentaComponent implements OnInit, OnDestroy {
   precio_venta: number = 0;
 
   iva: boolean = false;
+  formasPago: string[] = ['Efectivo', 'Transferencia', 'Tarjeta', 'Otros'];
+  pagoSeleccionado: string = '0';
+  otros: boolean = true;
   detalle: string = '';
   encabezados = ['Boni','Código', 'Descripción','Lote y Fecha C.', 'Stock', 'Cantidad', 'Precio', 'Total'];
   
   headerTable = ['Cod. Principal', 'Cod. Auxiliar', 'Cant.', 'Descripción', 'Detalle Adicional', 'Precio Unitario', 'Descuento', 'Precio Total'];
 
-  infoTributaria = {
-    ambiente: '1',
-    tipoEmision: '1',
-    razonSocial: 'MORAN VIDAL JUAN PABLO',
-    nombreComercial: 'AZUDIST',
-    ruc: '0103663357001',
-    codDoc: '01',
-    estab: '001',
-    ptoEmi: '100',
-    dirMatriz: 'Camino del tejar 4-30 camino a las pencas',
-  }
+  infoTributaria = environment.infoTributaria;
 
   respuestaSri: string = '';
   autorizacion: string = '';
 
   elementType: "canvas" | "img" | "svg" = 'svg';
   // TODO LA FACTURA 15 CON LA CLAVE DE ACCESO GENERAR PDF 1601202301010366335700120011000000000151601015414
-  value = '';
+  value = '1231231231321';
   format: "" | "CODE128" | "CODE128A" | "CODE128B" | "CODE128C" | "EAN" | "UPC" | "EAN8" | "EAN5" | "EAN2" | "CODE39" | "ITF14" | "MSI" | "MSI10" | "MSI11" | "MSI1010" | "MSI1110" | "pharmacode" | "codabar" = 'CODE128';
   lineColor = '#000000';
   width = 5;
@@ -86,10 +79,10 @@ export class VentaComponent implements OnInit, OnDestroy {
   codigoBarras: any;
   fileTmp: any;
   pdf: any;
+  comprobanteRecibido: boolean = false;
 
   get values(): string[] {
     return this.value.split('\n')
- 
   }
   
   constructor(private ventaService: VentaService,
@@ -103,19 +96,30 @@ export class VentaComponent implements OnInit, OnDestroy {
      
         this.venta = this.ventaService.getVenta();
         this.suscriberVenta = this.ventaService.getVentaChanges().subscribe( res => {
-          this.venta = res;
+              this.venta = res;
               this.addProducto();
               this.calcularValores();
               this.changePago();
               this.obtenerSerie();
               
               this.precio_venta = this.venta.productos[0].producto.producto.precio_venta;
-        });
-        this.addProducto();
-        this.calcularValores();
+            });
+            this.addProducto();
+            this.calcularValores();
+            console.log('Bienvenido a la factura')
+          }
+  
+  ngOnInit() {}
+
+  metodoPago(evt: any){
+    this.pagoSeleccionado = evt.target.value;
   }
 
-  ngOnInit() {}
+  ionViewDidEnter(){
+    this.obtenerSerie();
+    console.log('Obtuve la serie');
+    console.log(this.serie);
+  }
 
 
   ngOnDestroy() {
@@ -138,7 +142,7 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   async facturar() {
     const numFactura = this.serie + this.venta.numero;
-    console.log(numFactura);
+
     const arrDetalle: DetVentaProducto[] = [];
 
     this.venta.productos.forEach( producto => {
@@ -163,59 +167,98 @@ export class VentaComponent implements OnInit, OnDestroy {
 
       arrDetalle.push(productoDetalle);
     });
-      arrDetalle.pop();
+
     const estructuraFactura = await this.sriService.p_generar_factura_xml(numFactura, this.venta, arrDetalle);
     if (estructuraFactura) {
       this.value = this.sriService.claveAcceso;
       const factBase64 = btoa(estructuraFactura);
       
-      this.suscriberApiRecepcion = this.enviarFacturaSri(factBase64).subscribe( ({recibido, clave}) => {
-          if(recibido === 'RECIBIDA'){
-            setTimeout(() => {
-              this.suscriberApiAutorizacion = this.autorizarFacturaSri(clave).subscribe(async res => {
-                console.log('llame al servicio despues de 5 segundos', res);
-                if(res[0] === 'AUTORIZADO'){
-                  this.generarPDF();
-                }
-              });
-            }, 5000);
-          }
+      this.suscriberApiRecepcion = this.enviarFacturaSri(factBase64).
+      subscribe({
+        next: (resp) => {
+          console.log('respuesta', resp);
+            if(resp.recibido === 'RECIBIDA'){
+              setTimeout(() => {
+                    this.suscriberApiAutorizacion = this.autorizarFacturaSri(this.value).
+                    subscribe({
+                      next: async (res) => {
+                        if(res[0] === 'AUTORIZADO'){
+                          this.generarPDF();
+                        }
+                      },
+                      error: (err) => {
+                        console.log('Error al autorizar el comprobante');
+                        console.log(err);
+                      },
+                      complete: () => console.info('complete') 
+                    })
+              }, 4000); 
 
-      });
+            }
+        },
+        error: (err) => {
+          console.log('Error al enviar el comprobante');
+          console.log(err);
+        }
+      })  
     }
-
   }
 
   enviarFacturaSri(facBase64: string){
     const urlFirma = environment.firmaP12;
     const passFirma = environment.passFirma;
-    const urlEnviarComp = environment.urlApiSriRecibirComprobante;
+    const urlEnviarComp = `${environment.urlApiSriRecibirComprobante}/api/validarComprobanteXmlAPI`;
 
     return this.http.post<ComprobanteRecibidoSri>(urlEnviarComp,{
       xmlBase64: facBase64,
       firmaP12: urlFirma,
-      passFirma: passFirma
+      passFirma: passFirma,
+      tipoDocumento: 'factura'
     }).pipe(
       map( res => {
-        console.log('respuesta SRI', res.data.sriResponse.respuestaRecepcionComprobante.estado[0]);
-        console.log('clave de acceso', res.data.claveAcceso);
+        console.log(res);
         return {
           recibido: res.data.sriResponse.respuestaRecepcionComprobante.estado[0],
           clave: res.data.claveAcceso 
         }
+      }),
+      retry(3)
+      ,
+      catchError(err => {
+        this.interaccionService.dismissLoading();
+        return this.manejoErrorEnvioComprobante(err);
       })
     );
   }
 
+   manejoErrorEnvioComprobante(error: HttpErrorResponse){
+    console.log('sucedio un error en el envío del comprobante');
+    this.interaccionService.preguntaAlert('Error',error.message);
+    return throwError('error');
+  }
+   
+  manejoErrorAutorizarComprobante(error: HttpErrorResponse){
+    console.log('sucedio un error al autorizar el comprobante');
+    this.interaccionService.preguntaAlert('Error',error.message);
+    return throwError('error');
+  }
+
   autorizarFacturaSri(claveAcceso: string){
     
-    const urlAutorComp = environment.urlApiSriAutorizarComprobante;
+    const urlAutorComp = `${environment.urlApiSriAutorizarComprobante}/api/autorizacionComprobanteAPI`;
     return this.http.post<autorizaComprobante>(urlAutorComp,{
       claveAcceso: claveAcceso,
       ambiente: 2
     }).pipe(
       map( res => {
+        console.log(res);
         return res.data.sriResponse.respuestaAutorizacionComprobante.autorizaciones[0].autorizacion[0].estado
+      }),
+      retry(3)
+      ,
+      catchError(err => {
+        this.interaccionService.dismissLoading();
+        return this.manejoErrorAutorizarComprobante(err);
       })
     );
   }
@@ -256,24 +299,12 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.setFontSize(11); //factura
       doc.setFont('times','normal',700);
       doc.text("FACTURA", 128, 30);   
-      doc.text("Información Adicional", 40, 220);
   
       //Contenedor de la informacion de direccion
       doc.rect(15,70,95,45);
       doc.text(this.infoTributaria.razonSocial, 20, 75);   
       doc.text(this.infoTributaria.nombreComercial, 20, 82);   
 
-      doc.setFontSize(10); 
-      doc.text("Forma de Pago", 35, 274);   
-      doc.text("Valor", 80, 274);   
-      doc.setFont('times','normal',400);
-      doc.text(this.venta.total.toFixed(2), 82, 280);
-
-      doc.setFontSize(9); 
-      doc.text(this.venta.subtotal_sin_iva.toFixed(2), 185, 214,{align: 'left'});
-      doc.text(this.venta.subtotal_sin_iva.toFixed(2), 185, 234, {align: 'left'});
-      doc.text(this.venta.iva.toFixed(2), 185, 249, {align: 'left'});
-      doc.text(this.venta.total.toFixed(2), 185, 264, {align: 'left'}); 
 
       doc.setFontSize(8); //RUC
       doc.setFont('times','normal',400);
@@ -287,13 +318,10 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.text('', 43, 97);  
       doc.text('NO', 80, 113);   
       doc.text(this.venta.cliente.nombre.toUpperCase(), 70, 125);      
-      doc.text(`${new Date().toLocaleDateString()}`, 70, 135);       
+      doc.text(`${new Date().toLocaleDateString()}`, 70, 135);                     
       doc.text(this.venta.cliente.ruc, 170, 125);
-      doc.text(this.venta.cliente.codCliente, 45, 228);   
-      doc.text(this.venta.cliente.direccion.toUpperCase(), 45, 236);
-      doc.text(this.venta.cliente.telefono, 45, 244);
-      doc.text(this.venta.cliente.email, 45, 252);
-      doc.text(this.detalle.toUpperCase(), 45, 260);
+  
+
 
       doc.setFont('times','normal',700);
       doc.text("R.U.C:", 118, 20);   
@@ -315,46 +343,11 @@ export class VentaComponent implements OnInit, OnDestroy {
       doc.text("Guía de Remisión:", 135, 135); 
       doc.addImage(this.codigoBarras,118,90,70,20);
 
-      //Contenedor de lo informacion adicional
-      doc.rect(15,210,95,55);
-      doc.text('Cod Cliente', 18, 228);   
-      doc.text("Dirección", 18, 236);  
-      doc.text("Teléfono", 18, 244);    
-      doc.text("Email", 18, 252);  
-      doc.text('Pago Diferido', 18, 260);
-      
-      //Contenedor de los totales
-      doc.rect(115,210,58,5); doc.rect(173,210,22,5);
-      doc.rect(115,215,58,5); doc.rect(173,215,22,5);
-      doc.rect(115,220,58,5); doc.rect(173,220,22,5);
-      doc.rect(115,225,58,5); doc.rect(173,225,22,5);
-      doc.rect(115,230,58,5); doc.rect(173,230,22,5);
-      doc.rect(115,235,58,5); doc.rect(173,235,22,5);
-      doc.rect(115,240,58,5); doc.rect(173,240,22,5);
-      doc.rect(115,245,58,5); doc.rect(173,245,22,5);
-      doc.rect(115,250,58,5); doc.rect(173,250,22,5);
-      doc.rect(115,255,58,5); doc.rect(173,255,22,5);
-      doc.rect(115,260,58,5); doc.rect(173,260,22,5);
-      doc.text("SUBTOTAL 12%", 116,214);     
-      doc.text("SUBTOTAL 0%", 116, 219);     
-      doc.text("SUBTOTAL no objeto de IVA", 116, 224);     
-      doc.text("SUBTOTAL Exento de IVA", 116, 229);     
-      doc.text("SUBTOTAL SIN IMPUESTOS", 116, 234);     
-      doc.text("DESCUENTO", 116, 239);         
-      doc.text("ICE", 116, 244);         
-      doc.text("IVA 12%", 116, 249);      
-      doc.text("IRBPNR", 116, 254);    
-      doc.text("PROPINA", 116, 259);    
-      doc.text("VALOR TOTAL $", 116, 264);
-
       doc.setFontSize(7); //No.
       doc.setFont('times','normal',400);
-
-      //Contenedor de la forma de pago
-      doc.rect(15,270,60,6); doc.rect(75,270,20,6);
-      doc.rect(15,276,60,5); doc.rect(75,276,20,5);
-      doc.text('SIN UTILIZACIÓN DEL SISTEMA FINANCIERO', 18, 280);
-      doc.text(this.value, 125, 110); //CLAVE DE ACCESO   
+      doc.text(this.value, 118, 110); //CLAVE DE ACCESO   
+      
+      let coordY = 0;
 
       autoTable(doc, {
         head: [this.headerTable],
@@ -367,7 +360,85 @@ export class VentaComponent implements OnInit, OnDestroy {
         columnStyles: {'Descripción': {cellWidth: 120}}
       })
 
+      if(dataBody.length <= 10){
+        coordY = 10
+      } else if(dataBody.length <= 20){
+        doc.addPage(); coordY = -200;
+      } else if(dataBody.length <= 50){
+        coordY = 10;
+      } else if(dataBody.length <= 60){
+        doc.addPage(); coordY = -200;
+      } else if(dataBody.length <= 90){
+        coordY = 10;
+      } else if(dataBody.length <= 100){
+        doc.addPage(); coordY = -200;
+      }
+
+      //Titulo información adicional
+      doc.setFontSize(11); //factura
+      doc.setFont('times','normal',700);
+      doc.text("Información Adicional", 40, 220 + coordY);
+
+      doc.setFontSize(10); 
+      doc.text("Forma de Pago", 35, 274 + coordY);   
+      doc.text("Valor", 80, 274 + coordY);  
+
+      doc.setFont('times','normal',400);
+      doc.setFontSize(9); 
+      doc.text(this.venta.subtotal_sin_iva.toFixed(2), 185, 214 + coordY,{align: 'left'});
+      doc.text(this.venta.subtotal_sin_iva.toFixed(2), 185, 234 + coordY, {align: 'left'});
+      doc.text(this.venta.iva.toFixed(2), 185, 249 + coordY, {align: 'left'});
+      doc.text(this.venta.total.toFixed(2), 185, 264 + coordY, {align: 'left'}); 
       
+      
+      doc.setFontSize(8);
+      doc.text(this.venta.total.toFixed(2), 82, 280 + coordY);
+      doc.text(this.venta.cliente.codCliente, 45, 228 + coordY);   
+      doc.text(this.venta.cliente.direccion.toUpperCase(), 45, 236 + coordY);
+      doc.text(this.venta.cliente.telefono, 45, 244 + coordY);
+      doc.text(this.venta.cliente.email, 45, 252 + coordY);
+      doc.text(this.detalle.toUpperCase(), 45, 260 + coordY);
+
+      //Contenedor de lo informacion adicional
+      doc.rect(15,210 + coordY,95,55);
+      doc.setFont('times','normal',700);
+      doc.text('Cod Cliente', 18, 228 + coordY);   
+      doc.text("Dirección", 18, 236 + coordY);  
+      doc.text("Teléfono", 18, 244 + coordY);    
+      doc.text("Email", 18, 252 + coordY);  
+      doc.text('Pago Diferido', 18, 260 + coordY);
+
+      //Contenedor de los totales
+      doc.rect(115,210 + coordY,58,5); doc.rect(173,210 + coordY,22,5);
+      doc.rect(115,215 + coordY,58,5); doc.rect(173,215 + coordY,22,5);
+      doc.rect(115,220 + coordY,58,5); doc.rect(173,220 + coordY,22,5);
+      doc.rect(115,225 + coordY,58,5); doc.rect(173,225 + coordY,22,5);
+      doc.rect(115,230 + coordY,58,5); doc.rect(173,230 + coordY,22,5);
+      doc.rect(115,235 + coordY,58,5); doc.rect(173,235 + coordY,22,5);
+      doc.rect(115,240 + coordY,58,5); doc.rect(173,240 + coordY,22,5);
+      doc.rect(115,245 + coordY,58,5); doc.rect(173,245 + coordY,22,5);
+      doc.rect(115,250 + coordY,58,5); doc.rect(173,250 + coordY,22,5);
+      doc.rect(115,255 + coordY,58,5); doc.rect(173,255 + coordY,22,5);
+      doc.rect(115,260 + coordY,58,5); doc.rect(173,260 + coordY,22,5);
+      doc.text("SUBTOTAL 12%", 116,214 + coordY);     
+      doc.text("SUBTOTAL 0%", 116, 219 + coordY);     
+      doc.text("SUBTOTAL no objeto de IVA", 116, 224 + coordY);     
+      doc.text("SUBTOTAL Exento de IVA", 116, 229 + coordY);     
+      doc.text("SUBTOTAL SIN IMPUESTOS", 116, 234 + coordY);     
+      doc.text("DESCUENTO", 116, 239 + coordY);         
+      doc.text("ICE", 116, 244 + coordY);         
+      doc.text("IVA 12%", 116, 249 + coordY);      
+      doc.text("IRBPNR", 116, 254 + coordY);    
+      doc.text("PROPINA", 116, 259 + coordY);    
+      doc.text("VALOR TOTAL $", 116, 264 + coordY);
+
+      //Contenedor de la forma de pago
+      doc.setFontSize(7); //No.
+      doc.setFont('times','normal',400); 
+      doc.rect(15,270 + coordY,60,6); doc.rect(75,270 + coordY,20,6);
+      doc.rect(15,276 + coordY,60,5); doc.rect(75,276 + coordY,20,5);
+      doc.text('SIN UTILIZACIÓN DEL SISTEMA FINANCIERO', 18, 280 + coordY);
+
       //pdf-lib
       //Para fusionar un pdf existente con el que creó (ya sea usando jspdf, como arriba, o pdf-lib), 
       //importe pdf-lib en su archivo de componentes
@@ -391,21 +462,22 @@ export class VentaComponent implements OnInit, OnDestroy {
       const path = 'Facturas';
       const nombreArchivo = `Factura_${numFactura}.pdf`;
       //Obtiene la ruta del archivo 
-      //const fileURL = URL.createObjectURL(file);
+      const fileURL = URL.createObjectURL(file);
 
       const urlPdf = await this.uploadFile(file,path,nombreArchivo);
-      
+      this.venta.urlPDF = urlPdf;
       //Estructura del email
-      this.pdf = {
+       this.pdf = {
         name: nombreArchivo,
         docUrl: urlPdf,
         para: this.venta.cliente.email,
         cliente: this.venta.cliente.nombre,
-        numFactura
+        numDocumento: numFactura,
+        tipoDocumento: 'Factura'
       }
       setTimeout(() => {
-        this.sendEmail(this.pdf);
-      }, 2000);
+        this.sendEmail(this.pdf, numFactura);
+      }, 2000); 
 
     }).catch( ( error ) => {
       console.error('Error: ', error);
@@ -434,16 +506,11 @@ export class VentaComponent implements OnInit, OnDestroy {
 
   }
 
-   sendEmail(pdf: any){
-    this.suscriberEmail = this.notificacionesService.sendEmail(pdf).subscribe(async(res) => {
-      console.log(res);
-      if(res.ok){
-        await this.ventaService.saveVentaTerminada();
-      }
+   async sendEmail(pdf: any, numFactura: string){
 
-    });
+    await this.ventaService.saveVentaTerminada(numFactura);
+    this.suscriberEmail = this.notificacionesService.sendEmail(pdf).subscribe(() => {});
   }
-
   
   async saveVenta() {
     if (this.venta.productos.length < 1) {
@@ -455,43 +522,34 @@ export class VentaComponent implements OnInit, OnDestroy {
       this.interaccionService.showToast('Debe ingresar los datos del cliente');
       return;
     }
+
+    if (this.venta.vendedor === '') {
+      this.interaccionService.showToast('Debe ingresar el nombre del vendedor');
+      return;
+    }
     
-    this.interaccionService.preguntaAlert('Alerta', 
-    '¿Terminar y guardar la venta actual?').then( async res => {
+    if (this.pagoSeleccionado === '0') {
+      this.interaccionService.showToast('Debe escoger un método de pago');
+      return;
+    }
+    
+    this.interaccionService.preguntaAlert('Alerta', '¿Terminar y guardar la venta actual?').then( async res => {
         if (res) {
-            this.venta.detalle = this.detalle;
-            
-            if (this.pago >= this.venta.total) {
-              await this.interaccionService.presentLoading();
-              this.venta.productos.forEach(item => {
-
-                if(item.producto.producto.codigo !== ''){
-
-                  const transproducto: TransaccionProducto = {
-                    numero_factura: this.serie + this.venta.numero,
-                    proveedor: this.venta.cliente.nombre,
-                    ruc: this.venta.cliente.ruc,
-                    cantidad: item.cantidad,
-                    um: item.producto.um,
-                    producto: item.producto.producto,
-                    fecha_transaccion: `${new Date().toLocaleString()}`,
-                    tipo_transaccion: 'Egreso de stock'
-                  };
-                  
-                  const path = `${Paths.transacciones}${item.producto.producto.codigo}/Kardex`;
-                  this.firestoreService.createDocument<TransaccionProducto>(transproducto, path);  
-                  this.facturar();
-                } else { return}
-                
-              });
-              
-              this.pago = 0;
-              this.vuelto = 0;
-            } else {
-              
-              this.interaccionService.showToast('El valor pagado es menor el total de la venta', 3000);
-            }
-        }
+          
+          if (this.pago >= this.venta.total) {
+              this.venta.detalle = this.detalle;
+              this.venta.formaPago = this.pagoSeleccionado;
+              this.venta.vendedor = this.venta.vendedor.toUpperCase();
+              this.venta.productos.pop();  
+                await this.interaccionService.presentLoading();
+                await this.facturar();
+                this.pago = 0;
+                this.vuelto = 0;
+              }
+              else {
+                this.interaccionService.showToast('El valor pagado es menor el total de la venta', 3000);
+              }
+            } 
     });
   }
 

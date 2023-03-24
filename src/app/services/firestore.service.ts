@@ -49,24 +49,6 @@ export class FirestoreService {
     });
   }
 
-/*  getCollectionFromCache<tipo>(enlace: string): Promise<tipo[] | null>  {
-    return new Promise( async (resolve) => {
-      this.getCollection<tipo>(enlace).then( docsServer => {
-        if (docsServer.empty) {
-          resolve(null);
-        } else {
-          const collection: tipo[] = [];
-          docsServer.docs.forEach( doc => {
-             collection.push(doc.data());
-          })
-          resolve(collection);
-        }
-     });
-
-  });
-}*/
-
-
 
   getCollection<tipo>(enlace: string): Observable<tipo[]>{
     

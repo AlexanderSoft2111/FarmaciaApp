@@ -29,10 +29,21 @@ export const environment = {
   email: 'azudist@outlook.com', //gmail alex.tofis21@gmail.com
   contrasenaMail: 'oficina1', //gmail ekxguvptkermxhuc
   urlApiEmail: 'https://us-central1-azudist-7fcea.cloudfunctions.net',
-  urlApiSriRecibirComprobante: 'https://us-central1-fakcil.cloudfunctions.net/validarComprobanteXml',
-  urlApiSriAutorizarComprobante: 'https://us-central1-fakcil.cloudfunctions.net/autorizacionComprobante',  
-  firmaP12: "https://firebasestorage.googleapis.com/v0/b/azudist-7fcea.appspot.com/o/Firma%20Electronica%2FJUAN%20PABLO%20MORAN%20VIDAL%20061222105141%20(1).p12?alt=media&token=3f546687-eaaf-41fe-9b8a-38759748697c",
-  passFirma: "Mvjp3357" 
+  urlApiSriRecibirComprobante: 'https://us-central1-azudist-7fcea.cloudfunctions.net',
+  urlApiSriAutorizarComprobante: 'https://us-central1-azudist-7fcea.cloudfunctions.net',  
+  firmaP12: "https://firebasestorage.googleapis.com/v0/b/azudist-7fcea.appspot.com/o/Firma%20Electronica%2FJUAN%20PABLO%20MORAN%20VIDAL%20061222105141_c.p12?alt=media&token=710859c4-79e4-432a-855e-9bfdb5a834c4",
+  passFirma: "Mvjp3357",
+  infoTributaria : {
+    ambiente: '2',
+    tipoEmision: '1',
+    razonSocial: 'MORAN VIDAL JUAN PABLO',
+    nombreComercial: 'AZUDIST',
+    ruc: '0103663357001',
+    codDoc: '01',
+    estab: '001',
+    ptoEmi: '100',
+    dirMatriz: 'Camino del tejar 4-30 camino a las pencas',
+  }
 };
 
 

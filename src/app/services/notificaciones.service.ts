@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, retry } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -21,7 +21,9 @@ export class NotificacionesService {
         email,
         password
       }
-    });
+    }).pipe(
+      retry(2)
+    );
   }
 
 }
